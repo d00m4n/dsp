@@ -1,0 +1,180 @@
+import type { AppConfig } from '../../types/config';
+
+const config: AppConfig = {
+  schemaVersion: 1,
+  theme: {
+    lightFlavour: 'dsp-dawn',
+    darkFlavour: 'd00man-dark',
+    fallbackFlavour: 'd00man-dark',
+    accent: 'mauve',
+    fontScale: 1,
+    radius: 12,
+    backdrop: { kind: 'solid', fit: 'cover', blur: 0, opacity: 1 },
+    contentWidth: { mode: 'full', percent: 100, fixedPx: 1200 },
+  },
+  search: {
+    defaultEngineId: 'd',
+    detectUrls: true,
+    suggestFromLinks: true,
+    engines: [
+      { id: 'd', name: 'DuckDuckGo', template: 'https://duckduckgo.com/?q={query}' },
+      { id: 'g', name: 'Google', template: 'https://www.google.com/search?q={query}' },
+      {
+        id: 'w',
+        name: 'Wikipedia (ca)',
+        template: 'https://ca.wikipedia.org/w/index.php?search={query}',
+      },
+    ],
+  },
+  widgets: [
+    {
+      id: 'date-local',
+      type: 'date',
+      slot: 'header-left',
+      order: 0,
+      enabled: true,
+      timezone: 'Europe/Madrid',
+      locale: 'ca-ES',
+      style: 'short',
+      capitalise: true,
+      showWeekNumber: false,
+    },
+    {
+      id: 'weather-reus',
+      type: 'weather',
+      slot: 'header-right',
+      order: 0,
+      enabled: true,
+      label: 'Reus',
+      latitude: 41.155,
+      longitude: 1.1075,
+      units: 'metric',
+      refreshMinutes: 30,
+    },
+    {
+      id: 'greeting-main',
+      type: 'greeting',
+      slot: 'header-center',
+      order: 0,
+      enabled: true,
+      name: 'dr_D00m4n',
+    },
+    {
+      id: '628a404d-687e-4e1a-8f79-0436044d7877',
+      type: 'phrase',
+      slot: 'footer-left',
+      order: 0,
+      enabled: true,
+      label: 'help',
+      phrases: ['use ? for help', 'use , for config'],
+    },
+    {
+      id: '6a769ab1-9ea6-49fe-8539-f1df3f0c6b42',
+      type: 'clock',
+      slot: 'footer-right',
+      order: 0,
+      enabled: true,
+      timezone: 'Europe/Madrid',
+      hour12: false,
+      showSeconds: false,
+      locale: 'es-ES',
+    },
+  ],
+  tabs: [
+    {
+      id: 'social',
+      name: 'Social',
+      icon: 'world',
+      groups: [
+        {
+          id: 'networks',
+          name: 'Xarxes',
+          links: [
+            {
+              id: 'mastodon',
+              name: 'Mastodon',
+              url: 'https://mastodon.social',
+              icon: 'brand-mastodon',
+            },
+            { id: 'bluesky', name: 'Bluesky', url: 'https://bsky.app', icon: 'brand-bluesky' },
+            {
+              id: 'reddit',
+              name: 'Reddit',
+              url: 'https://www.reddit.com',
+              icon: 'brand-reddit',
+            },
+            {
+              id: 'youtube',
+              name: 'YouTube',
+              url: 'https://www.youtube.com',
+              icon: 'brand-youtube',
+            },
+            {
+              id: 'instagram',
+              name: 'Instagram',
+              url: 'https://www.instagram.com',
+              icon: 'brand-instagram',
+            },
+            {
+              id: 'linkedin',
+              name: 'LinkedIn',
+              url: 'https://www.linkedin.com',
+              icon: 'brand-linkedin',
+            },
+            { id: 'twitch', name: 'Twitch', url: 'https://www.twitch.tv', icon: 'brand-twitch' },
+            {
+              id: 'telegram',
+              name: 'T&elegram',
+              url: 'https://web.telegram.org',
+              icon: 'brand-telegram',
+            },
+            {
+              id: 'discord',
+              name: 'Discord',
+              url: 'https://discord.com/app',
+              icon: 'brand-discord',
+            },
+            { id: 'github', name: 'Git&Hub', url: 'https://github.com', icon: 'brand-github' },
+          ],
+        },
+      ],
+    },
+    {
+      id: 'home',
+      name: 'Home',
+      icon: 'home',
+      groups: [
+        {
+          id: 'daily',
+          name: 'Daily',
+          links: [
+            { id: 'gmail', name: 'Gmail', url: 'https://mail.google.com', icon: 'mail' },
+            {
+              id: 'calendar',
+              name: 'Ca&lendar',
+              url: 'https://calendar.google.com',
+              icon: 'calendar',
+            },
+            { id: 'drive', name: 'Drive', url: 'https://drive.google.com', icon: 'brand-google-drive' },
+            {
+              id: 'wikipedia',
+              name: 'Wi&kipedia',
+              url: 'https://ca.wikipedia.org',
+              icon: 'brand-wikipedia',
+            },
+            { id: 'news', name: 'News', url: 'https://news.google.com', icon: 'news' },
+          ],
+        },
+      ],
+    },
+  ],
+  behaviour: {
+    startTab: 'first',
+    confirmBeforeReset: true,
+    showMnemonics: true,
+    pageTitle: 'homebase',
+    footerPosition: 'page-end',
+  },
+};
+
+export const DEFAULT_CONFIG: AppConfig = Object.freeze(config);

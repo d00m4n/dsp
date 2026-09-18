@@ -1,0 +1,298 @@
+/*
+ * flavours.css - palette definitions
+ *
+ * ORIGINAL GENERATED PALETTE (PRD RF-50b, stage 2 of 2)
+ * -------------------------------------------------------
+ * The hex values below are originally-generated: they are produced by
+ * `tools/palette.ts` (run via `npm run palette:build`), which reads a
+ * per-flavour OKLCH spec (hue rotation, chroma scale, lightness adjust),
+ * applies it, and rewrites this file. They are not Catppuccin's own values.
+ *
+ * The four flavours' *structure* (24 tokens per flavour, one flavour per
+ * light/dark variant) and token *naming* (`mauve`, `rosewater`, `crust`, ...)
+ * are still inspired by the Catppuccin palette (https://github.com/catppuccin/
+ * palette), distributed under the MIT License, Copyright (c) 2021 Catppuccin.
+ * See the NOTICE file at the repository root.
+ *
+ * Do not hand-edit the hex values below — they are not reproducible or
+ * auditable that way, and their WCAG contrast is verified automatically
+ * (`npm run palette:check`, also run as part of `npm test`). Re-run
+ * `npm run palette:build` after changing the spec in `tools/palette.ts`.
+ *
+ * Components MUST NOT reference --p-* variables directly. Use the semantic
+ * tokens defined in the :root block instead.
+ */
+
+@layer theme {
+
+  /* dsp-dawn - Clara (default clar) - derived from Catppuccin Latte */
+  [data-flavour="dsp-dawn"] {
+    color-scheme: light;
+    --p-rosewater: #d08a5d;
+    --p-flamingo: #d47755;
+    --p-pink: #f26b9f;
+    --p-mauve: #a315c9;
+    --p-red: #c91a00;
+    --p-maroon: #dd4800;
+    --p-peach: #e96f00;
+    --p-yellow: #8f6100;
+    --p-green: #007b37;
+    --p-teal: #2088a4;
+    --p-sky: #5194e9;
+    --p-sapphire: #3893be;
+    --p-blue: #634cea;
+    --p-lavender: #9473ec;
+    --p-text: #4f4760;
+    --p-subtext1: #5e576e;
+    --p-subtext0: #6d677c;
+    --p-overlay2: #7d778b;
+    --p-overlay1: #898496;
+    --p-overlay0: #9b98a8;
+    --p-surface2: #aaa8b6;
+    --p-surface1: #bab8c5;
+    --p-surface0: #c9c8d3;
+    --p-base: #eaeaee;
+    --p-mantle: #e1e2e8;
+    --p-crust: #dfdfe8;
+  }
+
+  /* dsp-dusk - Fosca suau - derived from Catppuccin Frappé */
+  [data-flavour="dsp-dusk"] {
+    color-scheme: dark;
+    --p-rosewater: #f6ddcf;
+    --p-flamingo: #f4c7b8;
+    --p-pink: #ffbcd6;
+    --p-mauve: #e39ed9;
+    --p-red: #ec8d6d;
+    --p-maroon: #f0a38c;
+    --p-peach: #ebae6a;
+    --p-yellow: #dbd598;
+    --p-green: #90dda8;
+    --p-teal: #85cdd5;
+    --p-sky: #a5d4ec;
+    --p-sapphire: #99c2eb;
+    --p-blue: #aba8f2;
+    --p-lavender: #d2bcf0;
+    --p-text: #d9d2f8;
+    --p-subtext1: #c7c1e6;
+    --p-subtext0: #b6b0d1;
+    --p-overlay2: #a59fbf;
+    --p-overlay1: #938eab;
+    --p-overlay0: #827c97;
+    --p-surface2: #706b84;
+    --p-surface1: #5e5a71;
+    --p-surface0: #4d485d;
+    --p-base: #3b374a;
+    --p-mantle: #332f40;
+    --p-crust: #2d2938;
+  }
+
+  /* dsp-night - Fosca mitjana - derived from Catppuccin Macchiato */
+  [data-flavour="dsp-night"] {
+    color-scheme: dark;
+    --p-rosewater: #fce6da;
+    --p-flamingo: #f9d2c5;
+    --p-pink: #ffc5dd;
+    --p-mauve: #e6a2ec;
+    --p-red: #f89481;
+    --p-maroon: #f8a692;
+    --p-peach: #f4bb79;
+    --p-yellow: #e8e4ab;
+    --p-green: #93e9b8;
+    --p-teal: #91dde5;
+    --p-sky: #a2ddf9;
+    --p-sapphire: #97c8f7;
+    --p-blue: #aeaefc;
+    --p-lavender: #d4c0fb;
+    --p-text: #dfd9fc;
+    --p-subtext1: #ccc6e7;
+    --p-subtext0: #b9b3d2;
+    --p-overlay2: #a6a0be;
+    --p-overlay1: #928da9;
+    --p-overlay0: #7f7993;
+    --p-surface2: #6c667e;
+    --p-surface1: #59536a;
+    --p-surface0: #453f55;
+    --p-base: #322c40;
+    --p-mantle: #2a2536;
+    --p-crust: #231f2c;
+  }
+
+  /* dsp-abyss - Fosca profunda (default fosc) - derived from Catppuccin Mocha */
+  [data-flavour="dsp-abyss"] {
+    color-scheme: dark;
+    --p-rosewater: #ffede3;
+    --p-flamingo: #fddacf;
+    --p-pink: #ffcce1;
+    --p-mauve: #ecaaf0;
+    --p-red: #ff9894;
+    --p-maroon: #f8ada2;
+    --p-peach: #fac685;
+    --p-yellow: #f5f4bd;
+    --p-green: #95f3c7;
+    --p-teal: #9becf3;
+    --p-sky: #9ee3ff;
+    --p-sapphire: #94ccff;
+    --p-blue: #b0b6ff;
+    --p-lavender: #d4c2ff;
+    --p-text: #e3defd;
+    --p-subtext1: #cfcae7;
+    --p-subtext0: #bab5d1;
+    --p-overlay2: #a6a1bb;
+    --p-overlay1: #918ca4;
+    --p-overlay0: #7e788e;
+    --p-surface2: #696378;
+    --p-surface1: #554e62;
+    --p-surface0: #40394b;
+    --p-base: #2b2535;
+    --p-mantle: #241f2c;
+    --p-crust: #1c1822;
+  }
+
+  /* ------------------------------------------------------------------ *
+   * Hand-authored flavours. Unlike the four above, these are NOT produced
+   * by `tools/palette.ts` — their hex values are picked by hand and are
+   * exempt from `npm run palette:build` (which only knows the four
+   * Catppuccin-derived flavours' names and leaves any other
+   * `[data-flavour]` block untouched). They ARE still covered by
+   * `npm run palette:check` / `tests/unit/paletteContrast.test.ts`, which
+   * read every `[data-flavour]` block generically, so their WCAG contrast
+   * is verified the same way.
+   * ------------------------------------------------------------------ */
+
+  /* d00man - d00m4n (light) */
+  [data-flavour="d00man"] {
+    color-scheme: light;
+    --p-rosewater: #f3e6d3;
+    --p-flamingo: #dba57e;
+    --p-pink: #cf8f8a;
+    --p-mauve: #a35a2f;
+    --p-red: #b23b3b;
+    --p-maroon: #8a4526;
+    --p-peach: #c17a3f;
+    --p-yellow: #7a5a1a;
+    --p-green: #4a5a3f;
+    --p-teal: #356359;
+    --p-sky: #6f97a8;
+    --p-sapphire: #3f6478;
+    --p-blue: #3a5a7a;
+    --p-lavender: #c98a54;
+    --p-text: #2b2320;
+    --p-subtext1: #3e352f;
+    --p-subtext0: #6b5f52;
+    --p-overlay2: #8a7d6c;
+    --p-overlay1: #7a6c58;
+    --p-overlay0: #bbac94;
+    --p-surface2: #c9baa0;
+    --p-surface1: #fffcf5;
+    --p-surface0: #f8f2e4;
+    --p-base: #ece2cf;
+    --p-mantle: #e5d9c0;
+    --p-crust: #fefbf5;
+  }
+
+  /* d00man-dark - d00m4n dark */
+  [data-flavour="d00man-dark"] {
+    color-scheme: dark;
+    --p-rosewater: #f0ddc9;
+    --p-flamingo: #dba180;
+    --p-pink: #e39dc4;
+    --p-mauve: #6fe7c8;
+    --p-red: #ef6a6f;
+    --p-maroon: #a8583a;
+    --p-peach: #c97b4a;
+    --p-yellow: #e8bd5c;
+    --p-green: #7ed99a;
+    --p-teal: #4bc2bd;
+    --p-sky: #7ad6ea;
+    --p-sapphire: #59a6d6;
+    --p-blue: #6fa3e6;
+    --p-lavender: #3fae93;
+    --p-text: #dcece6;
+    --p-subtext1: #bbcfca;
+    --p-subtext0: #7f9995;
+    --p-overlay2: #6a817f;
+    --p-overlay1: #566a69;
+    --p-overlay0: #415253;
+    --p-surface2: #2c3a3d;
+    --p-surface1: #212a2e;
+    --p-surface0: #1a2124;
+    --p-base: #12171a;
+    --p-mantle: #0e1214;
+    --p-crust: #0a0d0f;
+  }
+
+  /* reus - Reus (light, brand colours from reus.cat) */
+  [data-flavour="reus"] {
+    color-scheme: light;
+    --p-rosewater: #f0dcd8;
+    --p-flamingo: #dba7a0;
+    --p-pink: #c98a9e;
+    --p-mauve: #752641;
+    --p-red: #c0392b;
+    --p-maroon: #671226;
+    --p-peach: #d17a3d;
+    --p-yellow: #856317;
+    --p-green: #4d7a4f;
+    --p-teal: #3f7d7a;
+    --p-sky: #6e9bb0;
+    --p-sapphire: #4f7896;
+    --p-blue: #3f6f96;
+    --p-lavender: #a8506e;
+    --p-text: #222222;
+    --p-subtext1: #3c3937;
+    --p-subtext0: #545251;
+    --p-overlay2: #656160;
+    --p-overlay1: #7a7674;
+    --p-overlay0: #9b9694;
+    --p-surface2: #e1e1e1;
+    --p-surface1: #efefef;
+    --p-surface0: #ffffff;
+    --p-base: #f9f7f8;
+    --p-mantle: #f3f0f1;
+    --p-crust: #ede9ea;
+  }
+
+  /* ------------------------------------------------------------------ *
+   * Semantic tokens. This is the only surface components are allowed to
+   * consume. Remapping a role is a one-line change here.
+   * ------------------------------------------------------------------ */
+  :root {
+    /* Surfaces, from furthest back to closest to the reader */
+    --surface-sunken: var(--p-crust);
+    --surface-page: var(--p-base);
+    --surface-raised: var(--p-surface0);
+    --surface-overlay: var(--p-surface1);
+    --surface-hover: var(--p-surface2);
+
+    /* Text */
+    --text-primary: var(--p-text);
+    --text-secondary: var(--p-subtext1);
+    --text-muted: var(--p-subtext0);
+    --text-faint: var(--p-overlay1);
+    --text-on-accent: var(--p-crust);
+
+    /* Lines and edges */
+    --border-subtle: var(--p-surface1);
+    --border-strong: var(--p-surface2);
+    --focus-ring: var(--accent);
+
+    /* Accent. Overridden at runtime from theme.accent by setting
+       --accent on the <html> element to another --p-* variable. */
+    --accent: var(--p-mauve);
+    --accent-muted: var(--p-lavender);
+
+    /* Status */
+    --status-danger: var(--p-red);
+    --status-warning: var(--p-yellow);
+    --status-success: var(--p-green);
+    --status-info: var(--p-blue);
+
+    /* Mnemonic underline on link cards */
+    --mnemonic: var(--accent);
+
+    /* Icon glyphs (IconGlyph.svelte). Overridable at runtime from
+       theme.iconColor by setting --icon directly on the <html> element. */
+    --icon: var(--accent);
+  }
+}

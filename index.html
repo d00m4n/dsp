@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>homebase</title>
+    <script>
+      (function () {
+        var FALLBACK = 'd00man-dark';
+        var flavour = FALLBACK;
+        try {
+          var raw = localStorage.getItem('homebase:config');
+          var config = raw ? JSON.parse(raw) : {};
+          var theme = config.theme || {};
+          // Mirrors App.svelte's per-tab flavour override: if the
+          // remembered active tab (see ui.svelte.ts) has its own
+          // light/dark/fallback flavour, it wins over the global one —
+          // avoids a flash of the wrong flavour before hydration.
+          var activeTabId = localStorage.getItem('homebase:activeTab');
+          var tabs = Array.isArray(config.tabs) ? config.tabs : [];
+          var activeTab = null;
+          for (var i = 0; i < tabs.length; i++) {
+            if (tabs[i] && tabs[i].id === activeTabId) {
+              activeTab = tabs[i];
+              break;
+            }
+          }
+          var lightFlavour = (activeTab && activeTab.lightFlavour) || theme.lightFlavour;
+          var darkFlavour = (activeTab && activeTab.darkFlavour) || theme.darkFlavour;
+          var fallbackFlavour = (activeTab && activeTab.fallbackFlavour) || theme.fallbackFlavour;
+          var mq = window.matchMedia('(prefers-color-scheme: dark)');
+          var dark = mq.media !== 'not all' ? mq.matches : true;
+          flavour = (dark ? darkFlavour : lightFlavour) || fallbackFlavour || FALLBACK;
+        } catch (e) {
+          /* corrupt storage or no matchMedia: keep the fallback */
+        }
+        document.documentElement.setAttribute('data-flavour', flavour);
+      })();
+    </script>
+    <link rel="stylesheet" href="./src/styles/reset.css" />
+    <link rel="stylesheet" href="./src/styles/flavours.css" />
+    <link rel="stylesheet" href="./src/styles/tokens.css" />
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="./src/main.ts"></script>
+  </body>
+</html>

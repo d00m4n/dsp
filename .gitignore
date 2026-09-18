@@ -1,0 +1,22 @@
+node_modules/
+dist/
+dist-ssr/
+*.local
+.dev-server/
+
+# Real deployment configs are never committed; only compiled defaults are.
+public/config.json
+
+# FTP publish script and its credentials must never be committed.
+publish.sh
+publish.env.local
+
+# Editors
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# Test artefacts
+test-results/
+playwright-report/
+coverage/

@@ -1,0 +1,68 @@
+name: Deploy
+
+# Gated on the CI workflow (see ci.yml, name: "CI") completing successfully on
+# main. This is a workflow_run trigger rather than a needs:-gated job in the
+# same workflow, per PHASE-5-PLAN.md Phase 6, so that deploy.yml stays a
+# separate file from ci.yml as specified there. Deploy genuinely cannot start
+# before CI passes: the `if` guard below checks both the triggering workflow's
+# conclusion and that it ran for a push to main (not a pull_request run).
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Build and deploy to GitHub Pages
+    runs-on: ubuntu-latest
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'main'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Setup Node
+        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.1.0
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # `vite.config.ts` sets `base: './'`, so every asset reference in the
+      # built `dist/` output is a relative path. That is what makes this
+      # output correct when GitHub Pages serves it from a project
+      # subdirectory (https://<user>.github.io/<repo>/) rather than from the
+      # domain root — no path rewriting is needed here or in the Pages steps
+      # below.
+      - name: Build
+        run: npm run build
+
+      - name: Setup Pages
+        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
+        with:
+          path: dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4

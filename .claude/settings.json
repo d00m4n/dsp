@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s http://localhost:5173/src/App.svelte)",
+      "Bash(curl -s \"https://api.open-meteo.com/v1/forecast?latitude=41.155&longitude=1.1075&current=temperature_2m,apparent_temperature,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=1&temperature_unit=celsius&wind_speed_unit=kmh\")",
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(echo \"grep exit: $?\")",
+      "Bash(xargs -I{} basename {})",
+      "Bash(echo \"exit: $?\")",
+      "Bash(echo \"exit code: $?\")",
+      "Bash(/bin/grep -rn -- '--p-' /home/d00m4n/dsp/src --include='*.svelte')",
+      "Bash(xargs -0 /bin/grep -n -- '--p-')",
+      "Bash(echo \"matches: $?\")",
+      "Bash(echo \"drag matches: $?\")",
+      "Bash(sed -n '/^## 6\\\\./,/^## 7\\\\./p' PHASE-4.md)",
+      "Bash(sed -n '/^### 6.1/,/^### 6.2/p' PHASE-1.md)",
+      "Bash(echo \"\\(exit $?\\)\")",
+      "Bash(node -e ' *)",
+      "Bash(grep -n '$state\\(' /home/d00m4n/dsp/src/lib/components/settings/TabEditor.svelte /home/d00m4n/dsp/src/lib/components/settings/LinkEditor.svelte)",
+      "Bash(echo \"exit:$?\")",
+      "Bash(find / -iname \"libnspr4*\")",
+      "Bash(dpkg -l)",
+      "Bash(sudo -n true)",
+      "Bash(ldd /home/d00m4n/.cache/ms-playwright/chromium_headless_shell-1228/chrome-headless-shell-linux64/chrome-headless-shell)",
+      "Bash(npm ls *)",
+      "Bash(node -e \"const g=require\\('globals'\\); console.log\\(Object.keys\\(g\\).filter\\(k=>/service/i.test\\(k\\)\\)\\)\")",
+      "Bash(npx vite *)",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(echo \"LINT EXIT: $?\")",
+      "Bash(echo \"CHECK EXIT: $?\")",
+      "Bash(echo \"TEST EXIT: $?\")",
+      "Bash(echo \"BUILD EXIT: $?\")"
+    ]
+  }
+}

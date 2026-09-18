@@ -26,6 +26,11 @@ export const strings = {
     reload: 'Reload',
     dismiss: 'Dismiss',
   },
+  mobileActions: {
+    search: 'Search',
+    help: 'Help',
+    settings: 'Settings',
+  },
   settings: {
     persistFailed:
       "Your changes couldn't be saved — storage is full. Export your configuration to avoid losing changes.",
@@ -61,8 +66,10 @@ export const strings = {
       tabNameLabel: 'Tab name',
       tabIconLabel: 'Icon name',
       customFlavourLabel: 'Custom colour flavour for this tab',
-      customFlavourHint:
-        'This tab uses its own light/dark flavour pair instead of the global one, and still follows your system\'s light/dark mode.',
+      customFlavourHint: 'This tab uses its own flavour instead of the global one.',
+      flavourModeAutoLabel: 'Automatic (follow system light/dark)',
+      flavourModeFixedLabel: 'Fixed (always this flavour)',
+      fixedFlavourLabel: 'Flavour',
       untitledTab: 'Untitled tab',
       deleteTab: (name: string) => `Delete tab "${name}"`,
       noTabs: 'No tabs yet — add one to get started.',
@@ -117,9 +124,11 @@ export const strings = {
         date: 'Date',
         weather: 'Weather',
         greeting: 'Greeting',
+        phrase: 'Phrase',
       },
       moved: (name: string, slotLabel: string, position: number) =>
         `${name} moved to ${slotLabel}, position ${position}`,
+      slotSelectLabel: (name: string) => `Position for ${name}`,
       emptySlot: 'No widgets in this position yet.',
       addWidget: 'Add widget',
       addWidgetLabel: (typeLabel: string) => `Add ${typeLabel} widget`,
@@ -151,6 +160,11 @@ export const strings = {
       citySearchResultsLabel: 'City search results',
       latitudeLabel: 'Latitude (manual)',
       longitudeLabel: 'Longitude (manual)',
+      phrasesLabel: 'Phrases',
+      phrasesHint: 'One phrase per line. One is picked at random each time the page loads.',
+      footerPositionLabel: 'Footer position',
+      footerPositionPageEnd: 'Bottom of the page',
+      footerPositionAfterContent: 'Right after the links',
     },
     search: {
       heading: 'Search engines',
@@ -197,6 +211,9 @@ export const strings = {
         'dsp-dusk': 'Dusk (soft dark)',
         'dsp-night': 'Night (medium dark)',
         'dsp-abyss': 'Abyss (deep dark)',
+        d00man: 'd00m4n',
+        'd00man-dark': 'd00m4n dark',
+        reus: 'Reus',
       },
       kindLabel: 'Backdrop',
       kindNone: 'None',
