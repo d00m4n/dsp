@@ -17,7 +17,7 @@
     "palette:check": "tsx tools/palette.ts --check"
   },
   "devDependencies": {
-    "@axe-core/playwright": "^4.12.1",
+    "@axe-core/playwright": "^4.13.0",
     "@eslint/js": "^10.0.1",
     "@iconify-json/tabler": "^1.2.37",
     "@playwright/test": "^1.61.1",
