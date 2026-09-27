@@ -11,6 +11,7 @@
   import CitySearch from './CitySearch.svelte';
   import type {
     BehaviourConfig,
+    BitcoinWidget,
     ClockWidget,
     DateWidget,
     GreetingWidget,
@@ -69,6 +70,8 @@
       case 'date':
         return widget.label ? `${typeLabel} — ${widget.label}` : typeLabel;
       case 'weather':
+        return widget.label ? `${typeLabel} — ${widget.label}` : typeLabel;
+      case 'bitcoin':
         return widget.label ? `${typeLabel} — ${widget.label}` : typeLabel;
       case 'greeting':
         return widget.name ? `${typeLabel} — ${widget.name}` : typeLabel;
@@ -131,6 +134,13 @@
           longitude: 0,
           label: 'Weather',
           units: 'metric',
+          refreshMinutes: 30,
+        };
+      case 'bitcoin':
+        return {
+          ...base,
+          type: 'bitcoin',
+          currency: 'usd',
           refreshMinutes: 30,
         };
       case 'greeting':
@@ -286,6 +296,20 @@
       (draft) => {
         const w = draft.widgets.find((widget) => widget.id === widgetId);
         if (w && w.type === 'weather') w[field] = value;
+      },
+      { field: `widget-${widgetId}-${String(field)}` },
+    );
+  }
+
+  function updateBitcoinField<K extends keyof BitcoinWidget>(
+    widgetId: string,
+    field: K,
+    value: BitcoinWidget[K],
+  ): void {
+    configState.update(
+      (draft) => {
+        const w = draft.widgets.find((widget) => widget.id === widgetId);
+        if (w && w.type === 'bitcoin') w[field] = value;
       },
       { field: `widget-${widgetId}-${String(field)}` },
     );
@@ -565,6 +589,52 @@
                     <span class="field-label-static">{t.locationHeading}</span>
                     <CitySearch widget={widget} />
                   </div>
+                {/if}
+
+                {#if widget.type === 'bitcoin'}
+                  <label class="field">
+                    {t.labelFieldLabel}
+                    <input
+                      type="text"
+                      value={widget.label ?? ''}
+                      onchange={(event) =>
+                        updateBitcoinField(
+                          widget.id,
+                          'label',
+                          event.currentTarget.value === '' ? undefined : event.currentTarget.value,
+                        )}
+                    />
+                  </label>
+                  <label class="field">
+                    {t.currencyLabel}
+                    <select
+                      value={widget.currency}
+                      onchange={(event) =>
+                        updateBitcoinField(
+                          widget.id,
+                          'currency',
+                          event.currentTarget.value as BitcoinWidget['currency'],
+                        )}
+                    >
+                      <option value="usd">{t.currencyUsd}</option>
+                      <option value="eur">{t.currencyEur}</option>
+                    </select>
+                  </label>
+                  <label class="field">
+                    {t.refreshMinutesLabel}
+                    <input
+                      type="number"
+                      min="5"
+                      max="1440"
+                      value={widget.refreshMinutes}
+                      onchange={(event) =>
+                        updateBitcoinField(
+                          widget.id,
+                          'refreshMinutes',
+                          Number(event.currentTarget.value),
+                        )}
+                    />
+                  </label>
                 {/if}
 
                 {#if widget.type === 'greeting'}

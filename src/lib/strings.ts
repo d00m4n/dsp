@@ -15,6 +15,26 @@ export const strings = {
     label: (locationLabel: string, temperature: number, conditionLabel: string) =>
       `${Math.round(temperature)} degrees, ${conditionLabel}, ${locationLabel}`,
   },
+  bitcoin: {
+    symbol: '₿',
+    stale: 'Outdated',
+    unavailable: 'Bitcoin price unavailable',
+    formatPrice: (price: number, currency: string) =>
+      new Intl.NumberFormat(undefined, {
+        style: 'currency',
+        currency: currency.toUpperCase(),
+        maximumFractionDigits: 0,
+      }).format(price),
+    formatChange: (change: number) =>
+      new Intl.NumberFormat(undefined, {
+        style: 'percent',
+        signDisplay: 'exceptZero',
+        minimumFractionDigits: 1,
+        maximumFractionDigits: 1,
+      }).format(change / 100),
+    label: (price: string, changeLabel: string | null) =>
+      changeLabel ? `Bitcoin, ${price}, ${changeLabel} in the last 24 hours` : `Bitcoin, ${price}`,
+  },
   greeting: {
     morning: 'Good morning, {name}',
     afternoon: 'Good afternoon, {name}',
@@ -123,6 +143,7 @@ export const strings = {
         clock: 'Clock',
         date: 'Date',
         weather: 'Weather',
+        bitcoin: 'Bitcoin',
         greeting: 'Greeting',
         phrase: 'Phrase',
       },
@@ -144,6 +165,9 @@ export const strings = {
       unitsLabel: 'Units',
       unitsMetric: 'Metric',
       unitsImperial: 'Imperial',
+      currencyLabel: 'Currency',
+      currencyUsd: 'US dollar',
+      currencyEur: 'Euro',
       refreshMinutesLabel: 'Refresh interval (minutes)',
       hour12Label: '12-hour clock',
       showSecondsLabel: 'Show seconds',

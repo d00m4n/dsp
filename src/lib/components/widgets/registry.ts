@@ -3,6 +3,7 @@ import type { Widget } from '../../../types/config';
 import Clock from './Clock.svelte';
 import DateWidget from './DateWidget.svelte';
 import Weather from './Weather.svelte';
+import Bitcoin from './Bitcoin.svelte';
 import Greeting from './Greeting.svelte';
 import Phrase from './Phrase.svelte';
 
@@ -15,6 +16,7 @@ export const WIDGET_COMPONENTS = {
   clock: Clock,
   date: DateWidget,
   weather: Weather,
+  bitcoin: Bitcoin,
   greeting: Greeting,
   phrase: Phrase,
 } as const satisfies Record<Widget['type'], Component<{ widget: Widget }>>;

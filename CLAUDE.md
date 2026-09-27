@@ -72,8 +72,9 @@ Cadascuna té un criteri d'acceptació que la verifica. Trencar-ne una trenca el
 16. Tota reordenació funciona amb ratolí **i** amb teclat. Res de drag-and-drop HTML5.
 
 **Xarxa i privadesa**
-17. Zero peticions a la càrrega. L'única possible és Open-Meteo, i cap si
-    `weather.enabled` és fals.
+17. Zero peticions a la càrrega. Les úniques possibles són Open-Meteo i CoinGecko,
+    cadascuna només si hi ha un widget del tipus corresponent (weather/bitcoin)
+    habilitat.
 18. Geocodificació només mentre l'usuari escriu, mínim 3 caràcters, amb debounce.
 19. Cap analítica, cap cookie, cap identificador.
 

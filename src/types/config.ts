@@ -172,6 +172,14 @@ export interface WeatherWidget extends WidgetBase {
   refreshMinutes: number;
 }
 
+export interface BitcoinWidget extends WidgetBase {
+  type: 'bitcoin';
+  label?: string;
+  currency: 'usd' | 'eur';
+  /** Cache lifetime in minutes. */
+  refreshMinutes: number;
+}
+
 export interface GreetingWidget extends WidgetBase {
   type: 'greeting';
   name: string;
@@ -186,7 +194,13 @@ export interface PhraseWidget extends WidgetBase {
   phrases: string[];
 }
 
-export type Widget = ClockWidget | DateWidget | WeatherWidget | GreetingWidget | PhraseWidget;
+export type Widget =
+  | ClockWidget
+  | DateWidget
+  | WeatherWidget
+  | BitcoinWidget
+  | GreetingWidget
+  | PhraseWidget;
 
 export interface BehaviourConfig {
   /** Which tab is active on load; 'last' restores the previous session. */

@@ -3,6 +3,7 @@ import type {
   AppConfig,
   BackdropConfig,
   BehaviourConfig,
+  BitcoinWidget,
   ClockWidget,
   ContentWidthConfig,
   DateWidget,
@@ -57,7 +58,7 @@ const BACKDROP_SOURCE_PATTERN = /^wallpapers\/|^idb:[a-zA-Z0-9_-]+$/;
 const BACKDROP_FITS = ['cover', 'contain', 'tile'] as const;
 const CONTENT_WIDTH_MODES = ['full', 'percent', 'fixed'] as const;
 const DATE_STYLES = ['full', 'long', 'medium', 'short'] as const;
-const WIDGET_TYPES = ['clock', 'date', 'weather', 'greeting', 'phrase'] as const;
+const WIDGET_TYPES = ['clock', 'date', 'weather', 'bitcoin', 'greeting', 'phrase'] as const;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -483,6 +484,21 @@ function validateWidget(
           errors,
         ),
       } satisfies WeatherWidget;
+    case 'bitcoin':
+      return {
+        ...base,
+        type: 'bitcoin',
+        label: optionalStr(value.label, `${path}.label`, errors),
+        currency: oneOf(value.currency, ['usd', 'eur'] as const, `${path}.currency`, 'usd', errors),
+        refreshMinutes: clamped(
+          value.refreshMinutes,
+          `${path}.refreshMinutes`,
+          30,
+          5,
+          1440,
+          errors,
+        ),
+      } satisfies BitcoinWidget;
     case 'greeting':
       return {
         ...base,
