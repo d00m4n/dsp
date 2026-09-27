@@ -76,4 +76,9 @@ export default defineConfig({
     target: 'es2022',
     assetsInlineLimit: 4096,
   },
+  server: {
+    // Vite rejects unrecognised Host headers by default (DNS-rebinding
+    // protection); allow the local hostname used to reach the dev server.
+    allowedHosts: ['devsrv'],
+  },
 });
