@@ -121,16 +121,13 @@
        arrives, so it never jumps once the data does (PRD RF-05). */
     min-height: 1.5em;
     min-width: 4em;
+    color: var(--text-widget);
   }
 
   .content {
     display: inline-flex;
     align-items: center;
     gap: var(--space-1);
-  }
-
-  .place {
-    color: var(--text-muted);
   }
 
   .stale {

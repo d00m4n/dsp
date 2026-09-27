@@ -9,7 +9,7 @@ const config: AppConfig = {
     accent: 'mauve',
     fontScale: 1,
     radius: 12,
-    backdrop: { kind: 'solid', fit: 'cover', blur: 0, opacity: 1 },
+    backdrop: { kind: 'solid', fit: 'cover', blur: 0, opacity: 1, widgetBarSurface: false },
     contentWidth: { mode: 'full', percent: 100, fixedPx: 1200 },
   },
   search: {

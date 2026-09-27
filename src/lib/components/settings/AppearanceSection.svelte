@@ -204,6 +204,12 @@
     });
   }
 
+  function setWidgetBarSurface(value: boolean): void {
+    updateBackdrop('backdrop-widget-bar-surface', (b) => {
+      b.widgetBarSurface = value;
+    });
+  }
+
   function selectDeployedWallpaper(filename: string): void {
     sizeWarning = null;
     updateBackdrop('backdrop-source', (b) => {
@@ -361,6 +367,31 @@
         </label>
       {/each}
     </div>
+  </fieldset>
+
+  <fieldset class="field-group">
+    <legend>{t.widgetBarSurfaceLabel}</legend>
+    <div class="kind-options">
+      <label class="radio-field">
+        <input
+          type="radio"
+          name="backdrop-widget-bar-surface"
+          checked={!backdrop.widgetBarSurface}
+          onchange={() => setWidgetBarSurface(false)}
+        />
+        {t.widgetBarSurfaceTransparent}
+      </label>
+      <label class="radio-field">
+        <input
+          type="radio"
+          name="backdrop-widget-bar-surface"
+          checked={backdrop.widgetBarSurface}
+          onchange={() => setWidgetBarSurface(true)}
+        />
+        {t.widgetBarSurfaceSolid}
+      </label>
+    </div>
+    <p class="hint">{t.widgetBarSurfaceHint}</p>
   </fieldset>
 
   <fieldset class="field-group">

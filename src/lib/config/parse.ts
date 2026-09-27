@@ -264,6 +264,12 @@ function validateBackdrop(
     fit: oneOf(value.fit, BACKDROP_FITS, `${path}.fit`, fallback.fit, errors),
     blur: clamped(value.blur, `${path}.blur`, fallback.blur, 0, 100, errors),
     opacity: clamped(value.opacity, `${path}.opacity`, fallback.opacity, 0, 1, errors),
+    widgetBarSurface: bool(
+      value.widgetBarSurface,
+      `${path}.widgetBarSurface`,
+      fallback.widgetBarSurface,
+      errors,
+    ),
   };
 }
 

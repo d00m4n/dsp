@@ -219,6 +219,11 @@ export const strings = {
       kindNone: 'None',
       kindSolid: 'Solid colour',
       kindImage: 'Image',
+      widgetBarSurfaceLabel: 'Widget bar background',
+      widgetBarSurfaceHint:
+        'Gives the header and footer widgets their own background, so they stay legible over a busy backdrop.',
+      widgetBarSurfaceTransparent: 'Transparent',
+      widgetBarSurfaceSolid: 'Background colour',
       deployedHeading: 'Bundled wallpapers',
       deployedEmpty: 'No bundled wallpapers yet — choose a file instead.',
       deployedListLabel: 'Bundled wallpaper',
@@ -293,15 +298,17 @@ export const strings = {
     iconLabel: 'Icon',
     // Human-friendly labels for the raw Catppuccin-style palette token
     // names (see types/palette.ts), named after their default semantic
-    // role in flavours.css where one exists. Several tokens (rosewater,
-    // flamingo, pink, maroon, peach, teal, sky, sapphire, overlay2,
-    // overlay0, mantle) aren't wired to any semantic token by default —
-    // they're kept under their original name since inventing a role for
-    // them would be misleading.
+    // role in flavours.css where one exists. Several tokens (maroon,
+    // peach, teal, sky, sapphire, overlay2, overlay0, mantle) aren't wired
+    // to any semantic token by default — they're kept under their
+    // original name since inventing a role for them would be misleading.
+    // 'rosewater', 'flamingo' and 'pink' are the exceptions: they drive
+    // --text-widget, --icon-widget and --surface-widget-bar respectively
+    // (see flavours.css, applyTheme.ts's SEMANTIC_OVERRIDES).
     tokenNames: {
-      rosewater: 'Rosewater',
-      flamingo: 'Flamingo',
-      pink: 'Pink',
+      rosewater: 'Widget text',
+      flamingo: 'Widget icon',
+      pink: 'Widget bar',
       mauve: 'Mnemonic',
       red: 'Danger',
       maroon: 'Maroon',

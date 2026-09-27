@@ -265,12 +265,26 @@
     --surface-overlay: var(--p-surface1);
     --surface-hover: var(--p-surface2);
 
+    /* Widget bar background, shown behind the header/footer widget rows
+       when theme.backdrop.widgetBarSurface is on — keeps them legible
+       over a busy backdrop image. Translucent (via color-mix, no raw
+       palette hex touched) so it still reads as sitting over the
+       backdrop rather than a fully opaque bar. The theme editor's
+       "Widget bar" swatch (pink) overrides it directly, see
+       applyTheme.ts's SEMANTIC_OVERRIDES. */
+    --surface-widget-bar: color-mix(in srgb, var(--surface-overlay) 80%, transparent);
+
     /* Text */
     --text-primary: var(--p-text);
     --text-secondary: var(--p-subtext1);
     --text-muted: var(--p-subtext0);
     --text-faint: var(--p-overlay1);
     --text-on-accent: var(--p-crust);
+
+    /* Widget text. Defaults to --text-primary (not to --p-rosewater,
+       whose generated hue doesn't match --p-text); the theme editor's
+       "Widget text" swatch overrides it directly, see applyTheme.ts. */
+    --text-widget: var(--text-primary);
 
     /* Lines and edges */
     --border-subtle: var(--p-surface1);
@@ -294,5 +308,10 @@
     /* Icon glyphs (IconGlyph.svelte). Overridable at runtime from
        theme.iconColor by setting --icon directly on the <html> element. */
     --icon: var(--accent);
+
+    /* Widget icons (Clock, DateWidget). Defaults to --icon; the theme
+       editor's "Widget icon" swatch overrides it directly, see
+       applyTheme.ts — same pattern as --text-widget/rosewater. */
+    --icon-widget: var(--icon);
   }
 }

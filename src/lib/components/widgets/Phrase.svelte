@@ -26,6 +26,7 @@
 <style>
   .phrase {
     margin: 0;
+    color: var(--text-widget);
   }
 
   .label {

@@ -2,6 +2,7 @@
   import { PALETTE_TOKENS, type PaletteToken } from '../../../types/palette';
   import { configState } from '../../state/config.svelte';
   import { resolveFlavour } from '../../theme/resolveFlavour';
+  import { SEMANTIC_OVERRIDES } from '../../theme/applyTheme';
   import { strings } from '../../strings';
   import Modal from '../ui/Modal.svelte';
 
@@ -60,11 +61,17 @@
     const styles = getComputedStyle(document.documentElement);
     const next: Partial<Record<PaletteToken, string>> = {};
     for (const token of PALETTE_TOKENS) {
-      next[token] = styles.getPropertyValue(`--p-${token}`).trim();
+      next[token] = styles.getPropertyValue(cssVarFor(token)).trim();
     }
     baseColours = next;
     baseIconColour = styles.getPropertyValue('--icon').trim() || '#000000';
   });
+
+  // Tokens in SEMANTIC_OVERRIDES drive their semantic token directly (see
+  // applyTheme.ts); every other token sets its own --p-{token} variable.
+  function cssVarFor(token: PaletteToken): string {
+    return SEMANTIC_OVERRIDES[token] ?? `--p-${token}`;
+  }
 
   function displayColour(token: PaletteToken): string {
     return theme.overrides?.[token] ?? baseColours[token] ?? '#000000';
@@ -259,7 +266,7 @@
 
     <div class="token-grid">
       {#each EDITABLE_TOKENS as token (token)}
-        <label class="token-row" title={token}>
+        <label class="token-row" title={cssVarFor(token)}>
           <input
             type="color"
             value={displayColour(token)}

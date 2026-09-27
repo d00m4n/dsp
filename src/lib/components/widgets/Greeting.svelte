@@ -25,5 +25,6 @@
 <style>
   .greeting {
     margin: 0;
+    color: var(--text-widget);
   }
 </style>

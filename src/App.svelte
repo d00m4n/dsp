@@ -205,7 +205,7 @@
 >
   <h1 class="visually-hidden">Homebase</h1>
   {#if hasHeaderWidgets}
-    <header class="widget-row">
+    <header class="widget-row" class:widget-row-surface={config.theme.backdrop.widgetBarSurface}>
       <WidgetSlot slot="header-left" widgets={config.widgets} position="left" />
       <WidgetSlot slot="header-center" widgets={config.widgets} position="center" />
       <WidgetSlot slot="header-right" widgets={config.widgets} position="right" />
@@ -228,7 +228,7 @@
   </main>
 
   {#if hasFooterWidgets}
-    <footer class="widget-row">
+    <footer class="widget-row" class:widget-row-surface={config.theme.backdrop.widgetBarSurface}>
       <WidgetSlot slot="footer-left" widgets={config.widgets} position="left" />
       <WidgetSlot slot="footer-center" widgets={config.widgets} position="center" />
       <WidgetSlot slot="footer-right" widgets={config.widgets} position="right" />
@@ -305,6 +305,12 @@
     grid-template-columns: auto 1fr auto;
     align-items: center;
     gap: var(--space-3);
+  }
+
+  .widget-row-surface {
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius, 12px);
+    background: var(--surface-widget-bar);
   }
 
   /*

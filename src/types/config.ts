@@ -62,6 +62,8 @@ export interface BackdropConfig {
   fit: 'cover' | 'contain' | 'tile';
   blur: number; // px
   opacity: number; // 0 - 1
+  /** Gives the header/footer widget rows their own surface, for legibility over a busy backdrop. */
+  widgetBarSurface: boolean;
 }
 
 export interface SearchConfig {

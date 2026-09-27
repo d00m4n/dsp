@@ -37,7 +37,7 @@
 </script>
 
 <time class="clock" datetime={iso}>
-  <IconGlyph name="clock" size={16} />
+  <IconGlyph name="clock" size={16} colorVar="--icon-widget" />
   {#if widget.label}<span class="label">{widget.label}</span>{/if}
   {formatted}
 </time>
@@ -48,6 +48,7 @@
     align-items: center;
     gap: var(--space-1);
     font-variant-numeric: tabular-nums;
+    color: var(--text-widget);
   }
 
   .label {

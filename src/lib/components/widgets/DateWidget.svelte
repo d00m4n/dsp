@@ -58,7 +58,7 @@
 </script>
 
 <time class="date-widget" datetime={iso}>
-  <IconGlyph name="calendar" size={16} />
+  <IconGlyph name="calendar" size={16} colorVar="--icon-widget" />
   {#if widget.label}<span class="label">{widget.label}</span>{/if}
   {formatted}
   {#if weekNumber !== null}<span class="week">{strings.date.week(weekNumber)}</span>{/if}
@@ -69,6 +69,7 @@
     display: inline-flex;
     align-items: center;
     gap: var(--space-1);
+    color: var(--text-widget);
   }
 
   .label {

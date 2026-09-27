@@ -5,9 +5,11 @@
   interface Props {
     name: string | undefined;
     size?: number;
+    /** CSS custom property supplying the glyph's colour. */
+    colorVar?: '--icon' | '--icon-widget';
   }
 
-  const { name, size = 20 }: Props = $props();
+  const { name, size = 20, colorVar = '--icon' }: Props = $props();
 
   const Glyph = $derived(name ? ICON_REGISTRY[name] : undefined);
 
@@ -32,10 +34,18 @@
 </script>
 
 {#if Glyph}
-  <Glyph width={size} height={size} class="icon-glyph" aria-hidden="true" focusable="false" />
+  <Glyph
+    width={size}
+    height={size}
+    class="icon-glyph"
+    style="color: var({colorVar})"
+    aria-hidden="true"
+    focusable="false"
+  />
 {:else if remoteGlyph}
   <svg
     class="icon-glyph"
+    style="color: var({colorVar})"
     viewBox="0 0 {remoteGlyph.width} {remoteGlyph.height}"
     width={size}
     height={size}
@@ -50,6 +60,5 @@
 <style>
   :global(.icon-glyph) {
     flex-shrink: 0;
-    color: var(--icon);
   }
 </style>
