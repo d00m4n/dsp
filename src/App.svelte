@@ -307,6 +307,21 @@
     gap: var(--space-3);
   }
 
+  /*
+   * MobileActionBar floats fixed over the bottom-right corner on touch
+   * devices (see its own media query). Reserve room below the footer so
+   * its buttons never sit on top of a footer-right widget.
+   */
+  @media (hover: none) and (pointer: coarse) {
+    .app {
+      padding-bottom: calc(var(--space-4) + 11rem);
+    }
+
+    footer.widget-row {
+      padding-right: 3.5rem;
+    }
+  }
+
   .backdrop-layer {
     position: fixed;
     inset: 0;
