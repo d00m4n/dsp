@@ -305,7 +305,7 @@ export const strings = {
       lavender: 'Accent (muted)',
       text: 'Primary text',
       subtext1: 'Secondary text',
-      subtext0: 'Muted text',
+      subtext0: 'Group text',
       overlay1: 'Faint text',
       surface2: 'Hover surface / strong border',
       surface1: 'Overlay surface / subtle border',
