@@ -274,8 +274,18 @@ export const strings = {
       resetCancel: 'Cancel',
     },
   },
+  commands: {
+    theme: {
+      label: 'Customize theme',
+      description: 'Opens the theme customizer',
+    },
+    help: {
+      label: 'Show commands',
+      description: 'Lists the available commands',
+    },
+    searchEngine: (name: string) => `Search ${name}`,
+  },
   themeEditor: {
-    commandLabel: 'Customize theme',
     title: 'Customize theme',
     editingFlavour: (flavour: string) => `Editing colours for the active flavour: ${flavour}`,
     hint:

@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { AppConfig, Link, Tab } from '../../../types/config';
   import { extractBang } from '../../search/bangs';
+  import { COMMANDS, matchCommand } from '../../search/commands';
   import { detectUrl } from '../../search/urlDetect';
   import { fuzzyMatch, type Candidate, type Match } from '../../search/fuzzy';
   import { isAllowedUrl } from '../../search/protocols';
@@ -102,18 +103,36 @@
     action?: () => void;
   }
 
-  // Reserved command bang, checked before the usual bang/search-engine flow:
+  // Reserved command bangs, checked before the usual bang/search-engine flow:
   // typed alone (not a real search engine id, so it would otherwise just be
-  // searched as literal text), it opens the theme customizer instead.
-  const isThemeCommand = $derived(trimmedRaw.toLowerCase() === '!theme');
+  // searched as literal text), each opens its own action instead.
+  const matchedCommand = $derived(matchCommand(trimmedRaw));
 
   const results = $derived.by<ResultItem[]>(() => {
-    if (isThemeCommand) {
+    if (matchedCommand?.bang === 'help') {
+      const commandItems = COMMANDS.map((command) => ({
+        kind: 'command' as const,
+        url: '',
+        label: `!${command.bang}`,
+        sublabel: command.description,
+        disabled: true,
+      }));
+      const engineItems = config.search.engines.map((e) => ({
+        kind: 'command' as const,
+        url: '',
+        label: `!${e.id}`,
+        sublabel: strings.commands.searchEngine(e.name),
+        disabled: true,
+      }));
+      return [...commandItems, ...engineItems];
+    }
+
+    if (matchedCommand?.bang === 'theme') {
       return [
         {
           kind: 'command',
           url: '',
-          label: strings.themeEditor.commandLabel,
+          label: matchedCommand.label,
           action: onOpenTheme,
         },
       ];
