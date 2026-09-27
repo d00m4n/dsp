@@ -59,11 +59,6 @@
     box-shadow: 0 4px 16px rgb(0 0 0 / 0.2);
   }
 
-  button:focus-visible {
-    outline: 2px solid var(--focus-ring);
-    outline-offset: 2px;
-  }
-
   @media (prefers-reduced-motion: no-preference) {
     button {
       transition: transform 0.15s ease;

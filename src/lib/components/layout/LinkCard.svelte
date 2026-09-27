@@ -75,6 +75,8 @@
   .link-card:hover,
   .link-card:focus-visible {
     background: var(--surface-hover);
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
   }
 
   .mnemonic {

@@ -22,7 +22,12 @@
     color: var(--text-primary);
   }
 
-  :focus-visible {
+  /*
+   * Keyboard focus and mouse hover give the same visual feedback on
+   * buttons, so pointer users see the same affordance keyboard users do.
+   */
+  :focus-visible,
+  button:hover {
     outline: 2px solid var(--focus-ring);
     outline-offset: 2px;
   }

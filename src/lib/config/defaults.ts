@@ -82,6 +82,34 @@ const config: AppConfig = {
   ],
   tabs: [
     {
+      id: 'home',
+      name: 'Home',
+      icon: 'home',
+      groups: [
+        {
+          id: 'daily',
+          name: 'Daily',
+          links: [
+            { id: 'gmail', name: 'Gmail', url: 'https://mail.google.com', icon: 'mail' },
+            {
+              id: 'calendar',
+              name: 'Ca&lendar',
+              url: 'https://calendar.google.com',
+              icon: 'calendar',
+            },
+            { id: 'drive', name: 'Drive', url: 'https://drive.google.com', icon: 'brand-google-drive' },
+            {
+              id: 'wikipedia',
+              name: 'Wi&kipedia',
+              url: 'https://ca.wikipedia.org',
+              icon: 'brand-wikipedia',
+            },
+            { id: 'news', name: 'News', url: 'https://news.google.com', icon: 'news' },
+          ],
+        },
+      ],
+    },
+    {
       id: 'social',
       name: 'Social',
       icon: 'world',
@@ -135,34 +163,6 @@ const config: AppConfig = {
               icon: 'brand-discord',
             },
             { id: 'github', name: 'Git&Hub', url: 'https://github.com', icon: 'brand-github' },
-          ],
-        },
-      ],
-    },
-    {
-      id: 'home',
-      name: 'Home',
-      icon: 'home',
-      groups: [
-        {
-          id: 'daily',
-          name: 'Daily',
-          links: [
-            { id: 'gmail', name: 'Gmail', url: 'https://mail.google.com', icon: 'mail' },
-            {
-              id: 'calendar',
-              name: 'Ca&lendar',
-              url: 'https://calendar.google.com',
-              icon: 'calendar',
-            },
-            { id: 'drive', name: 'Drive', url: 'https://drive.google.com', icon: 'brand-google-drive' },
-            {
-              id: 'wikipedia',
-              name: 'Wi&kipedia',
-              url: 'https://ca.wikipedia.org',
-              icon: 'brand-wikipedia',
-            },
-            { id: 'news', name: 'News', url: 'https://news.google.com', icon: 'news' },
           ],
         },
       ],
