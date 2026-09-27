@@ -17,7 +17,7 @@ test('settings panel: add a tab and link, then delete and undo it', async ({ pag
   await expect(settings).toBeVisible();
 
   // --- Navigate to "Tabs & links" ---
-  await settings.getByRole('button', { name: 'Tabs & links' }).click();
+  await settings.getByRole('tab', { name: 'Tabs & links' }).click();
 
   // --- Add a tab ---
   await settings.getByRole('button', { name: 'Add tab' }).click();
@@ -29,7 +29,8 @@ test('settings panel: add a tab and link, then delete and undo it', async ({ pag
   const groupRow = settings.locator('.group-row').last();
   await groupRow.getByLabel('Group name').fill('E2E Group');
 
-  // --- Add a link inside that group ---
+  // --- Add a link inside that group (groups start collapsed) ---
+  await groupRow.getByRole('button', { name: /^Expand group/ }).click();
   await groupRow.getByRole('button', { name: 'Add link' }).click();
   const linkRow = settings.locator('.link-row').last();
   await linkRow.getByLabel('Link name').fill('E2E Link');
@@ -49,13 +50,18 @@ test('settings panel: add a tab and link, then delete and undo it', async ({ pag
   // --- Reopen settings, go back to Tabs & links, delete the tab ---
   await page.keyboard.press(',');
   await expect(settings).toBeVisible();
-  await settings.getByRole('button', { name: 'Tabs & links' }).click();
+  await settings.getByRole('tab', { name: 'Tabs & links' }).click();
   await settings.getByRole('button', { name: 'Delete tab "E2E Tab"' }).click();
-  await expect(settings.locator('.tab-row', { hasText: 'E2E Tab' })).toHaveCount(0);
+  // The tab name lives in an <input>'s live value, which neither `hasText`
+  // (reads textContent) nor a `[value=...]` CSS selector (reads the initial
+  // attribute, not what the user typed) can see — count rows by label instead.
+  const tabNameInputs = settings.locator('.tab-row').getByLabel('Tab name');
+  await expect(tabNameInputs).toHaveCount(2); // Home, Social
 
   // --- Undo while the panel is open restores the deleted tab ---
   await page.keyboard.press('Control+z');
-  await expect(settings.locator('.tab-row', { hasText: 'E2E Tab' })).toHaveCount(1);
+  await expect(tabNameInputs).toHaveCount(3);
+  await expect(tabNameInputs.last()).toHaveValue('E2E Tab');
 
   // --- Closing and reopening confirms the restore persisted in state ---
   await page.keyboard.press('Escape');

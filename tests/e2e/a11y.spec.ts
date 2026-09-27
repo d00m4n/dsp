@@ -42,7 +42,7 @@ test('settings panel has no detectable accessibility violations', async ({ page 
 
   // Cycle to a second section ("Tabs & links") for broader coverage without
   // making the spec unwieldy by checking every section.
-  await settings.getByRole('button', { name: 'Tabs & links' }).click();
+  await settings.getByRole('tab', { name: 'Tabs & links' }).click();
   const tabsLinksResults = await new AxeBuilder({ page }).analyze();
   expect(tabsLinksResults.violations).toEqual([]);
 });
