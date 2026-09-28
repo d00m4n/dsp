@@ -1,12 +1,6 @@
 import { PALETTE_TOKENS, type PaletteToken } from '../../types/palette';
 import type { ThemeConfig } from '../../types/config';
-import { resolveFlavour, type FlavourOverride } from './resolveFlavour';
-
-/** A tab's own colour-token overrides, copied in from a saved theme. */
-export interface TabThemeOverride {
-  overrides?: Partial<Record<PaletteToken, string>>;
-  iconColor?: string;
-}
+import { resolveTheme, type FlavourOverride } from './resolveFlavour';
 
 /**
  * Tokens repurposed to drive a semantic token directly instead of their own
@@ -27,40 +21,37 @@ export const SEMANTIC_OVERRIDES: Partial<Record<PaletteToken, string>> = {
  * place allowed to reference a --p-* variable (accent override), per the
  * contract in flavours.css: components only ever consume semantic tokens.
  * `tabOverride` is the active tab's own flavour override, if any (see
- * `resolveFlavour`).
+ * `resolveTheme`) — it may itself pick a saved theme via `theme:{id}`.
  */
 export function applyTheme(
   theme: ThemeConfig,
   prefersDark: boolean,
   tabOverride?: FlavourOverride,
-  tabThemeOverride?: TabThemeOverride,
 ): void {
-  const flavour = resolveFlavour(theme, prefersDark, tabOverride);
+  const resolved = resolveTheme(theme, prefersDark, tabOverride);
   const root = document.documentElement;
-  root.setAttribute('data-flavour', flavour);
+  root.setAttribute('data-flavour', resolved.flavour);
   root.style.setProperty('--accent', `var(--p-${theme.accent})`);
   root.style.setProperty('--font-scale', String(theme.fontScale));
   root.style.setProperty('--radius', `${theme.radius}px`);
 
-  const iconColor = tabThemeOverride?.iconColor ?? theme.iconColor;
+  // theme.iconColor/overrides are the manual "!theme" customizer's live
+  // edits: they apply on top of whichever flavour is active, built-in or a
+  // saved one picked in a flavour slot, and win over that saved theme's own
+  // baked-in values when both set the same thing.
+  const iconColor = theme.iconColor ?? resolved.iconColor;
   if (iconColor) {
     root.style.setProperty('--icon', iconColor);
   } else {
     root.style.removeProperty('--icon');
   }
 
-  // Per-token colour overrides (set via the "!theme" customizer, or a saved
-  // theme applied to the active tab) apply on top of whichever flavour is
-  // active, regardless of light/dark — they are not stored per-flavour. A
-  // tab's own overrides replace the global ones entirely rather than
-  // merging with them, matching how a tab's flavour picks replace the
-  // global flavour. Any token without an override must have its inline
-  // value removed, so a cleared override actually reverts to the flavour's
-  // own value instead of sticking with a stale one.
-  const overrides = tabThemeOverride?.overrides ?? theme.overrides;
+  // Any token without an override must have its inline value removed, so a
+  // cleared override actually reverts to the flavour's own value instead of
+  // sticking with a stale one.
   for (const token of PALETTE_TOKENS) {
     if (token in SEMANTIC_OVERRIDES) continue;
-    const override = overrides?.[token];
+    const override = theme.overrides?.[token] ?? resolved.overrides?.[token];
     if (override) {
       root.style.setProperty(`--p-${token}`, override);
     } else {
@@ -69,7 +60,7 @@ export function applyTheme(
   }
 
   for (const [token, cssVar] of Object.entries(SEMANTIC_OVERRIDES) as [PaletteToken, string][]) {
-    const override = overrides?.[token];
+    const override = theme.overrides?.[token] ?? resolved.overrides?.[token];
     if (override) {
       root.style.setProperty(cssVar, override);
     } else {

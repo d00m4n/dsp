@@ -65,15 +65,11 @@
       darkFlavour: activeTab.darkFlavour,
       fallbackFlavour: activeTab.fallbackFlavour,
     };
-    const tabThemeOverride = activeTab && {
-      overrides: activeTab.overrides,
-      iconColor: activeTab.iconColor,
-    };
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
     function apply(): void {
       const prefersDark = mediaQuery.media !== 'not all' ? mediaQuery.matches : true;
-      applyTheme(theme, prefersDark, tabOverride, tabThemeOverride);
+      applyTheme(theme, prefersDark, tabOverride);
     }
 
     apply();

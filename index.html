@@ -29,6 +29,22 @@
           var lightFlavour = (activeTab && activeTab.lightFlavour) || theme.lightFlavour;
           var darkFlavour = (activeTab && activeTab.darkFlavour) || theme.darkFlavour;
           var fallbackFlavour = (activeTab && activeTab.fallbackFlavour) || theme.fallbackFlavour;
+          // A flavour slot can also hold 'theme:{id}', picking a saved
+          // theme (see ThemeEditor.svelte) instead of a built-in flavour;
+          // resolve it to that theme's own base flavour so data-flavour
+          // always names a real [data-flavour] block in flavours.css.
+          var savedThemes = Array.isArray(theme.savedThemes) ? theme.savedThemes : [];
+          function resolveChoice(choice) {
+            if (typeof choice !== 'string' || choice.indexOf('theme:') !== 0) return choice;
+            var id = choice.slice(6);
+            for (var j = 0; j < savedThemes.length; j++) {
+              if (savedThemes[j] && savedThemes[j].id === id) return savedThemes[j].baseFlavour;
+            }
+            return undefined;
+          }
+          lightFlavour = resolveChoice(lightFlavour);
+          darkFlavour = resolveChoice(darkFlavour);
+          fallbackFlavour = resolveChoice(fallbackFlavour);
           var mq = window.matchMedia('(prefers-color-scheme: dark)');
           var dark = mq.media !== 'not all' ? mq.matches : true;
           flavour = (dark ? darkFlavour : lightFlavour) || fallbackFlavour || FALLBACK;

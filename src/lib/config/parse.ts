@@ -8,6 +8,7 @@ import type {
   ContentWidthConfig,
   DateWidget,
   Flavour,
+  FlavourChoice,
   GreetingWidget,
   Link,
   LinkGroup,
@@ -44,6 +45,7 @@ const FLAVOURS: readonly Flavour[] = [
   'd00man-dark',
   'reus',
 ];
+const DEFAULT_BASE_FLAVOUR: Flavour = 'd00man-dark';
 const WIDGET_SLOTS: readonly WidgetSlot[] = [
   'header-left',
   'header-center',
@@ -158,6 +160,38 @@ function optionalOneOf<T extends string>(
   }
   report(errors, path, `expected one of [${allowed.join(', ')}], got ${JSON.stringify(value)}`);
   return undefined;
+}
+
+/** `theme:{id}` is valid only if `id` names an entry in `savedThemeIds`. */
+function isKnownSavedThemeChoice(value: string, savedThemeIds: ReadonlySet<string>): boolean {
+  return value.startsWith('theme:') && savedThemeIds.has(value.slice('theme:'.length));
+}
+
+function flavourChoice(
+  value: unknown,
+  path: string,
+  fallback: FlavourChoice,
+  savedThemeIds: ReadonlySet<string>,
+  errors: ConfigError[],
+): FlavourChoice {
+  if (typeof value === 'string' && isKnownSavedThemeChoice(value, savedThemeIds)) {
+    return value as FlavourChoice;
+  }
+  return oneOf(value, FLAVOURS, path, fallback as Flavour, errors);
+}
+
+/** Like `flavourChoice`, but `undefined` input is left as undefined instead of reported/defaulted. */
+function optionalFlavourChoice(
+  value: unknown,
+  path: string,
+  savedThemeIds: ReadonlySet<string>,
+  errors: ConfigError[],
+): FlavourChoice | undefined {
+  if (value === undefined) return undefined;
+  if (typeof value === 'string' && isKnownSavedThemeChoice(value, savedThemeIds)) {
+    return value as FlavourChoice;
+  }
+  return optionalOneOf(value, FLAVOURS, path, errors);
 }
 
 function url(value: unknown, path: string, fallback: string, errors: ConfigError[]): string {
@@ -332,11 +366,22 @@ function validateSavedThemes(
     const entryPath = `${path}[${index}]`;
     if (!isRecord(entry)) {
       report(errors, entryPath, `expected an object, got ${typeof entry}`);
-      return { id: uniqueId(undefined, used, `${entryPath}.id`, 'theme', errors), name: 'Unnamed' };
+      return {
+        id: uniqueId(undefined, used, `${entryPath}.id`, 'theme', errors),
+        name: 'Unnamed',
+        baseFlavour: DEFAULT_BASE_FLAVOUR,
+      };
     }
     return {
       id: uniqueId(entry.id, used, `${entryPath}.id`, 'theme', errors),
       name: str(entry.name, `${entryPath}.name`, 'Unnamed', errors),
+      baseFlavour: oneOf(
+        entry.baseFlavour,
+        FLAVOURS,
+        `${entryPath}.baseFlavour`,
+        DEFAULT_BASE_FLAVOUR,
+        errors,
+      ),
       overrides: validateOverrides(entry.overrides, `${entryPath}.overrides`, errors),
       iconColor: optionalStr(entry.iconColor, `${entryPath}.iconColor`, errors),
     };
@@ -353,26 +398,28 @@ function validateTheme(value: unknown, path: string, errors: ConfigError[]): The
     ? (value.accent as PaletteToken)
     : (report(errors, `${path}.accent`, `'${String(value.accent)}' is not a palette token`),
       fallback.accent);
+  const savedThemes = validateSavedThemes(value.savedThemes, `${path}.savedThemes`, errors);
+  const savedThemeIds = new Set(savedThemes.map((t) => t.id));
   return {
-    lightFlavour: oneOf(
+    lightFlavour: flavourChoice(
       value.lightFlavour,
-      FLAVOURS,
       `${path}.lightFlavour`,
       fallback.lightFlavour,
+      savedThemeIds,
       errors,
     ),
-    darkFlavour: oneOf(
+    darkFlavour: flavourChoice(
       value.darkFlavour,
-      FLAVOURS,
       `${path}.darkFlavour`,
       fallback.darkFlavour,
+      savedThemeIds,
       errors,
     ),
-    fallbackFlavour: oneOf(
+    fallbackFlavour: flavourChoice(
       value.fallbackFlavour,
-      FLAVOURS,
       `${path}.fallbackFlavour`,
       fallback.fallbackFlavour,
+      savedThemeIds,
       errors,
     ),
     accent,
@@ -387,7 +434,7 @@ function validateTheme(value: unknown, path: string, errors: ConfigError[]): The
     ),
     overrides: validateOverrides(value.overrides, `${path}.overrides`, errors),
     iconColor: optionalStr(value.iconColor, `${path}.iconColor`, errors),
-    savedThemes: validateSavedThemes(value.savedThemes, `${path}.savedThemes`, errors),
+    savedThemes,
   };
 }
 
@@ -593,6 +640,7 @@ function validateTab(
   value: unknown,
   path: string,
   used: Set<string>,
+  savedThemeIds: ReadonlySet<string>,
   errors: ConfigError[],
 ): Tab | null {
   if (!isRecord(value)) {
@@ -611,16 +659,24 @@ function validateTab(
     icon: str(value.icon, `${path}.icon`, 'folder', errors),
     banner: optionalStr(value.banner, `${path}.banner`, errors),
     bannerStatic: optionalStr(value.bannerStatic, `${path}.bannerStatic`, errors),
-    lightFlavour: optionalOneOf(value.lightFlavour, FLAVOURS, `${path}.lightFlavour`, errors),
-    darkFlavour: optionalOneOf(value.darkFlavour, FLAVOURS, `${path}.darkFlavour`, errors),
-    fallbackFlavour: optionalOneOf(
-      value.fallbackFlavour,
-      FLAVOURS,
-      `${path}.fallbackFlavour`,
+    lightFlavour: optionalFlavourChoice(
+      value.lightFlavour,
+      `${path}.lightFlavour`,
+      savedThemeIds,
       errors,
     ),
-    overrides: validateOverrides(value.overrides, `${path}.overrides`, errors),
-    iconColor: optionalStr(value.iconColor, `${path}.iconColor`, errors),
+    darkFlavour: optionalFlavourChoice(
+      value.darkFlavour,
+      `${path}.darkFlavour`,
+      savedThemeIds,
+      errors,
+    ),
+    fallbackFlavour: optionalFlavourChoice(
+      value.fallbackFlavour,
+      `${path}.fallbackFlavour`,
+      savedThemeIds,
+      errors,
+    ),
     groups,
   };
 }
@@ -691,17 +747,22 @@ export function parseConfig(input: unknown): ParseResult {
     : (root.widgets !== undefined && report(errors, 'widgets', `expected an array`),
       structuredClone(DEFAULT_CONFIG.widgets));
 
+  // Validated before tabs: a tab's own flavour slots can reference
+  // theme.savedThemes by id, so those ids must be known first.
+  const theme = validateTheme(root.theme, 'theme', errors);
+  const savedThemeIds = new Set((theme.savedThemes ?? []).map((t) => t.id));
+
   const tabIds = new Set<string>();
   const tabs = isArray(root.tabs)
     ? root.tabs
-        .map((t, i) => validateTab(t, `tabs[${i}]`, tabIds, errors))
+        .map((t, i) => validateTab(t, `tabs[${i}]`, tabIds, savedThemeIds, errors))
         .filter((t): t is Tab => t !== null)
     : (root.tabs !== undefined && report(errors, 'tabs', `expected an array`),
       structuredClone(DEFAULT_CONFIG.tabs));
 
   const config: AppConfig = {
     schemaVersion: num(root.schemaVersion, 'schemaVersion', DEFAULT_CONFIG.schemaVersion, errors),
-    theme: validateTheme(root.theme, 'theme', errors),
+    theme,
     search: validateSearch(root.search, 'search', errors),
     widgets,
     tabs: tabs.length > 0 ? tabs : structuredClone(DEFAULT_CONFIG.tabs),

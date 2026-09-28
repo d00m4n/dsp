@@ -99,21 +99,25 @@ describe('parseConfig — never throws, always returns a usable config', () => {
     expect(errors.some((e) => e.path === 'tabs[0].fallbackFlavour')).toBe(true);
   });
 
-  it("accepts a tab's own colour overrides and icon colour", () => {
-    const { config } = parseConfig({
-      tabs: [
-        {
-          id: 't1',
-          name: 'T',
-          icon: 'folder',
-          overrides: { mauve: '#123456' },
-          iconColor: '#ff00ff',
-          groups: [],
-        },
-      ],
+  it("accepts a saved theme picked in a tab's flavour slot", () => {
+    const { config, errors } = parseConfig({
+      theme: {
+        savedThemes: [
+          { id: 'custom-1', name: 'Custom', baseFlavour: 'dsp-night', overrides: { mauve: '#123456' } },
+        ],
+      },
+      tabs: [{ id: 't1', name: 'T', icon: 'folder', darkFlavour: 'theme:custom-1', groups: [] }],
     });
-    expect(config.tabs[0]!.overrides).toEqual({ mauve: '#123456' });
-    expect(config.tabs[0]!.iconColor).toBe('#ff00ff');
+    expect(config.tabs[0]!.darkFlavour).toBe('theme:custom-1');
+    expect(errors.some((e) => e.path === 'tabs[0].darkFlavour')).toBe(false);
+  });
+
+  it("falls back a tab's flavour slot when it references an unknown saved theme", () => {
+    const { config, errors } = parseConfig({
+      tabs: [{ id: 't1', name: 'T', icon: 'folder', darkFlavour: 'theme:missing', groups: [] }],
+    });
+    expect(config.tabs[0]!.darkFlavour).toBeUndefined();
+    expect(errors.some((e) => e.path === 'tabs[0].darkFlavour')).toBe(true);
   });
 
   it('accepts valid theme.overrides tokens and drops unknown ones', () => {
@@ -133,22 +137,43 @@ describe('parseConfig — never throws, always returns a usable config', () => {
     const { config, errors } = parseConfig({
       theme: {
         savedThemes: [
-          { id: 'imported-1', name: 'My theme', overrides: { mauve: '#123456', bogus: '#fff' } },
+          {
+            id: 'imported-1',
+            name: 'My theme',
+            baseFlavour: 'dsp-night',
+            overrides: { mauve: '#123456', bogus: '#fff' },
+          },
         ],
       },
     });
     expect(config.theme.savedThemes).toEqual([
-      { id: 'imported-1', name: 'My theme', overrides: { mauve: '#123456' }, iconColor: undefined },
+      {
+        id: 'imported-1',
+        name: 'My theme',
+        baseFlavour: 'dsp-night',
+        overrides: { mauve: '#123456' },
+        iconColor: undefined,
+      },
     ]);
     expect(errors.some((e) => e.path === 'theme.savedThemes[0].overrides.bogus')).toBe(true);
+  });
+
+  it('falls back an invalid saved-theme baseFlavour to the default', () => {
+    const { config, errors } = parseConfig({
+      theme: {
+        savedThemes: [{ id: 'a', name: 'A', baseFlavour: 'not-a-flavour', overrides: { mauve: '#111' } }],
+      },
+    });
+    expect(config.theme.savedThemes?.[0]!.baseFlavour).toBe(DEFAULT_CONFIG.theme.darkFlavour);
+    expect(errors.some((e) => e.path === 'theme.savedThemes[0].baseFlavour')).toBe(true);
   });
 
   it('regenerates duplicate or missing saved theme ids', () => {
     const { config, errors } = parseConfig({
       theme: {
         savedThemes: [
-          { id: 'dup', name: 'A', overrides: { mauve: '#111111' } },
-          { id: 'dup', name: 'B', overrides: { mauve: '#222222' } },
+          { id: 'dup', name: 'A', baseFlavour: 'dsp-night', overrides: { mauve: '#111111' } },
+          { id: 'dup', name: 'B', baseFlavour: 'dsp-night', overrides: { mauve: '#222222' } },
         ],
       },
     });

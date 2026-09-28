@@ -14,6 +14,10 @@ canviï de forma entre fases.
 ```ts
 export type Flavour = 'dsp-dawn' | 'dsp-dusk' | 'dsp-night' | 'dsp-abyss';
 
+/** Anything pickable in a light/dark/fallback flavour slot: a built-in
+ * `Flavour`, or `theme:{SavedTheme.id}` to use a saved theme there. */
+export type FlavourChoice = Flavour | `theme:${string}`;
+
 export interface AppConfig {
   schemaVersion: number;
   theme: ThemeConfig;
@@ -24,22 +28,24 @@ export interface AppConfig {
 }
 
 export interface ThemeConfig {
-  lightFlavour: Flavour;
-  darkFlavour: Flavour;
+  lightFlavour: FlavourChoice;
+  darkFlavour: FlavourChoice;
   /** Used when prefers-color-scheme cannot be resolved. Must be dark. */
-  fallbackFlavour: Flavour;
+  fallbackFlavour: FlavourChoice;
   overrides?: Partial<Record<PaletteToken, string>>;
   accent: PaletteToken;
   fontScale: number; // 0.8 – 1.4
   radius: number; // px
   backdrop: BackdropConfig;
-  /** Custom themes saved by the user (e.g. imported); inert until applied. */
+  /** Custom themes saved by the user (e.g. imported); pickable in any flavour slot. */
   savedThemes?: SavedTheme[];
 }
 
 export interface SavedTheme {
   id: string;
   name: string;
+  /** Which built-in flavour this is based on: light/dark grouping and the palette its overrides sit on top of. */
+  baseFlavour: Flavour;
   overrides?: Partial<Record<PaletteToken, string>>;
   iconColor?: string;
 }
@@ -79,12 +85,9 @@ export interface Tab {
   banner?: string;
   bannerStatic?: string;
   /** Per-tab flavour override; unset fields fall back to the global theme. */
-  lightFlavour?: Flavour;
-  darkFlavour?: Flavour;
-  fallbackFlavour?: Flavour;
-  /** A saved theme applied to this tab (copied in, not referenced live). */
-  overrides?: Partial<Record<PaletteToken, string>>;
-  iconColor?: string;
+  lightFlavour?: FlavourChoice;
+  darkFlavour?: FlavourChoice;
+  fallbackFlavour?: FlavourChoice;
   groups: LinkGroup[];
 }
 
@@ -238,16 +241,22 @@ fosca de `fallbackFlavour`. L'usuari només tria quina paleta correspon a cada m
 El tema s'aplica **abans del primer pintat** amb un script inline al `<head>`, abans de
 qualsevol full d'estil.
 
-**Temes desats.** Importar un fitxer de tema (o enganxar-ne el JSON) mai sobreescriu els
-overrides actius: afegeix una entrada a `theme.savedThemes`, inerta fins que l'usuari
-l'aplica. Des de la llista de temes desats es pot aplicar com a **tema per defecte**
-(sobreescriu `theme.overrides`/`theme.iconColor` globals) o **a una pestanya concreta**
-(es copia a `Tab.overrides`/`Tab.iconColor`, no és una referència: esborrar el tema desat
-no afecta les pestanyes on ja s'ha aplicat). Aplicar-lo és sempre una operació destructiva
-sobre l'overrides actiu (amb desfer). Els overrides d'una pestanya reemplacen els globals
-sencers mentre aquella pestanya és activa, mai es fusionen amb ells — igual que el
-`lightFlavour`/`darkFlavour` per pestanya reemplacen el global. Esborrar una entrada de
-`savedThemes` no toca cap tema ja aplicat.
+**Temes desats.** Importar un fitxer de tema (o enganxar-ne el JSON) mai sobreescriu res:
+afegeix una entrada a `theme.savedThemes` (amb `baseFlavour`, la paleta sobre la qual es
+van dissenyar els seus overrides). Un cop desat, apareix com una opció més — pel seu nom —
+a **qualsevol** selector de `lightFlavour`/`darkFlavour`/`fallbackFlavour`: el global
+(Appearance) i el de cada pestanya. No hi ha un mecanisme d'aplicació separat; triar-lo hi
+és exactament com triar `dsp-abyss` o qualsevol altra paleta. `theme.savedThemes` només
+apareix a les llistes de temes clars quan `baseFlavour` és clar, i a les de foscos quan és
+fosc.
+
+Un tema desat es referencia per id (`FlavourChoice = Flavour | 'theme:{id}'`), no es
+copia: esborrar-lo des de l'editor de temes (única acció que hi queda, a banda
+d'importar/descarregar) deixa qualsevol selector que l'usava apuntant a un id inexistent,
+que es resol al `fallbackFlavour` la propera vegada que es (re)valida la configuració —
+mai un error. L'editor de tokens (`theme.overrides`/`theme.iconColor`, la graella de
+color pickers) és independent d'això: sempre s'aplica per sobre de qualsevol paleta
+activa, tant si és de fàbrica com un tema desat, i hi guanya en cas de conflicte.
 
 L'adaptació de valors de la fase 5 no toca cap identificador ni selector: només els hex.
 Per això existeix la capa de tokens semàntics.

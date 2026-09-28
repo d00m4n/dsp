@@ -5,13 +5,20 @@
   import { isAnimatedWallpaperFormat } from '../../wallpapers/animatedFormat';
   import { collectIdbReferences } from '../../wallpapers/idbReferences';
   import { DEFAULT_CONFIG } from '../../config/defaults';
-  import { LIGHT_FLAVOURS, DARK_FLAVOURS } from '../../theme/flavourGroups';
-  import type { BackdropConfig, ContentWidthConfig, Flavour } from '../../../types/config';
+  import { LIGHT_FLAVOURS, DARK_FLAVOURS, flavourOptions } from '../../theme/flavourGroups';
+  import type { BackdropConfig, ContentWidthConfig, FlavourChoice } from '../../../types/config';
 
   const t = strings.settings.appearance;
 
   const theme = $derived(configState.config.theme);
   const behaviour = $derived(configState.config.behaviour);
+
+  const lightOptions = $derived(
+    flavourOptions(LIGHT_FLAVOURS, theme.savedThemes, t.flavourNames, 'light'),
+  );
+  const darkOptions = $derived(
+    flavourOptions(DARK_FLAVOURS, theme.savedThemes, t.flavourNames, 'dark'),
+  );
 
   function setPageTitle(value: string): void {
     const trimmed = value.trim();
@@ -23,7 +30,7 @@
     );
   }
 
-  function setLightFlavour(flavour: Flavour): void {
+  function setLightFlavour(flavour: FlavourChoice): void {
     configState.update(
       (draft) => {
         draft.theme.lightFlavour = flavour;
@@ -32,7 +39,7 @@
     );
   }
 
-  function setDarkFlavour(flavour: Flavour): void {
+  function setDarkFlavour(flavour: FlavourChoice): void {
     configState.update(
       (draft) => {
         draft.theme.darkFlavour = flavour;
@@ -41,7 +48,7 @@
     );
   }
 
-  function setFallbackFlavour(flavour: Flavour): void {
+  function setFallbackFlavour(flavour: FlavourChoice): void {
     configState.update(
       (draft) => {
         draft.theme.fallbackFlavour = flavour;
@@ -317,10 +324,10 @@
       {t.lightFlavourLabel}
       <select
         value={theme.lightFlavour}
-        onchange={(event) => setLightFlavour(event.currentTarget.value as Flavour)}
+        onchange={(event) => setLightFlavour(event.currentTarget.value as FlavourChoice)}
       >
-        {#each LIGHT_FLAVOURS as flavour (flavour)}
-          <option value={flavour}>{t.flavourNames[flavour]}</option>
+        {#each lightOptions as option (option.value)}
+          <option value={option.value}>{option.label}</option>
         {/each}
       </select>
     </label>
@@ -329,10 +336,10 @@
       {t.darkFlavourLabel}
       <select
         value={theme.darkFlavour}
-        onchange={(event) => setDarkFlavour(event.currentTarget.value as Flavour)}
+        onchange={(event) => setDarkFlavour(event.currentTarget.value as FlavourChoice)}
       >
-        {#each DARK_FLAVOURS as flavour (flavour)}
-          <option value={flavour}>{t.flavourNames[flavour]}</option>
+        {#each darkOptions as option (option.value)}
+          <option value={option.value}>{option.label}</option>
         {/each}
       </select>
     </label>
@@ -341,10 +348,10 @@
       {t.fallbackFlavourLabel}
       <select
         value={theme.fallbackFlavour}
-        onchange={(event) => setFallbackFlavour(event.currentTarget.value as Flavour)}
+        onchange={(event) => setFallbackFlavour(event.currentTarget.value as FlavourChoice)}
       >
-        {#each DARK_FLAVOURS as flavour (flavour)}
-          <option value={flavour}>{t.flavourNames[flavour]}</option>
+        {#each darkOptions as option (option.value)}
+          <option value={option.value}>{option.label}</option>
         {/each}
       </select>
     </label>

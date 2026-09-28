@@ -10,6 +10,14 @@ export type Flavour =
   | 'd00man-dark'
   | 'reus';
 
+/**
+ * Anything pickable in a light/dark/fallback flavour slot: a built-in
+ * `Flavour`, or `theme:{SavedTheme.id}` to use a saved (e.g. imported)
+ * theme there instead — same picker, same slots, no separate "apply"
+ * mechanism.
+ */
+export type FlavourChoice = Flavour | `theme:${string}`;
+
 export interface AppConfig {
   /** Schema version, used by the migration pipeline. */
   schemaVersion: number;
@@ -22,10 +30,10 @@ export interface AppConfig {
 
 export interface ThemeConfig {
   /** Always follows prefers-color-scheme; there is no manual override. */
-  lightFlavour: Flavour;
-  darkFlavour: Flavour;
-  /** Palette used when the media query cannot be resolved. Must be a dark one. */
-  fallbackFlavour: Flavour;
+  lightFlavour: FlavourChoice;
+  darkFlavour: FlavourChoice;
+  /** Used when prefers-color-scheme cannot be resolved. Must be a dark one. */
+  fallbackFlavour: FlavourChoice;
   /** Optional overrides for individual palette tokens. */
   overrides?: Partial<Record<PaletteToken, string>>;
   accent: PaletteToken;
@@ -35,13 +43,15 @@ export interface ThemeConfig {
   radius: number; // px
   backdrop: BackdropConfig;
   contentWidth: ContentWidthConfig;
-  /** Custom themes saved by the user (e.g. imported), not applied unless picked. */
+  /** Custom themes saved by the user (e.g. imported); pickable in any flavour slot as `theme:{id}`. */
   savedThemes?: SavedTheme[];
 }
 
 export interface SavedTheme {
   id: string;
   name: string;
+  /** Which built-in flavour this is based on; determines whether it's offered as a light or dark pick, and is the palette its overrides sit on top of. */
+  baseFlavour: Flavour;
   overrides?: Partial<Record<PaletteToken, string>>;
   iconColor?: string;
 }
@@ -104,18 +114,12 @@ export interface Tab {
    * global `theme` config while this tab is active. Still follows
    * prefers-color-scheme like the global setting does — a tab can pick a
    * different light/dark *pair*, not force one regardless of the system.
-   * Unset fields fall back to the global theme's own value.
+   * Unset fields fall back to the global theme's own value. Each field can
+   * be a built-in `Flavour` or `theme:{id}` to use a saved theme here.
    */
-  lightFlavour?: Flavour;
-  darkFlavour?: Flavour;
-  fallbackFlavour?: Flavour;
-  /**
-   * A saved theme (see `ThemeConfig.savedThemes`) applied to this tab, copied
-   * in at assignment time rather than referenced live — deleting the saved
-   * theme afterwards doesn't affect tabs it was already applied to.
-   */
-  overrides?: Partial<Record<PaletteToken, string>>;
-  iconColor?: string;
+  lightFlavour?: FlavourChoice;
+  darkFlavour?: FlavourChoice;
+  fallbackFlavour?: FlavourChoice;
   groups: LinkGroup[];
 }
 

@@ -1,8 +1,9 @@
 <script lang="ts">
   import { PALETTE_TOKENS, type PaletteToken } from '../../../types/palette';
-  import type { SavedTheme } from '../../../types/config';
+  import type { Flavour } from '../../../types/config';
   import { configState } from '../../state/config.svelte';
   import { resolveFlavour } from '../../theme/resolveFlavour';
+  import { ALL_FLAVOURS } from '../../theme/flavourGroups';
   import { SEMANTIC_OVERRIDES } from '../../theme/applyTheme';
   import { strings } from '../../strings';
   import { generateId } from '../../utils/id';
@@ -152,6 +153,7 @@
         iconColor?: string;
         unknownKeys: string[];
         suggestedName: string;
+        baseFlavour: Flavour;
       };
 
   let importStage: ImportStage = $state({ kind: 'idle' });
@@ -197,11 +199,20 @@
     if (Object.keys(overrides).length === 0 && !iconColor) {
       return { kind: 'error', message: t.importInvalid };
     }
-    const suggestedName =
-      typeof parsed.flavour === 'string' && parsed.flavour.trim() !== ''
-        ? parsed.flavour
-        : t.importDefaultName;
-    return { kind: 'preview', overrides, iconColor, unknownKeys, suggestedName };
+    // The base flavour the overrides were designed against, from the
+    // `flavour` field downloadTheme() writes; falls back to whichever
+    // flavour is active right now if missing/unrecognised.
+    const baseFlavour = (ALL_FLAVOURS as readonly string[]).includes(parsed.flavour as string)
+      ? (parsed.flavour as Flavour)
+      : flavour;
+    return {
+      kind: 'preview',
+      overrides,
+      iconColor,
+      unknownKeys,
+      suggestedName: t.importDefaultName,
+      baseFlavour,
+    };
   }
 
   async function handleImportFile(event: Event): Promise<void> {
@@ -235,12 +246,12 @@
 
   function confirmImport(): void {
     if (importStage.kind !== 'preview') return;
-    const { overrides, iconColor } = importStage;
+    const { overrides, iconColor, baseFlavour } = importStage;
     const name = importName.trim() !== '' ? importName.trim() : importStage.suggestedName;
 
     configState.update((draft) => {
       draft.theme.savedThemes ??= [];
-      draft.theme.savedThemes.push({ id: generateId(), name, overrides, iconColor });
+      draft.theme.savedThemes.push({ id: generateId(), name, baseFlavour, overrides, iconColor });
     });
 
     importStage = { kind: 'idle' };
@@ -253,29 +264,9 @@
     importName = '';
   }
 
-  function applySavedTheme(saved: SavedTheme): void {
-    configState.update(
-      (draft) => {
-        draft.theme.overrides = { ...saved.overrides };
-        draft.theme.iconColor = saved.iconColor;
-      },
-      { destructive: true },
-    );
-  }
-
-  function applySavedThemeToTab(saved: SavedTheme, tabId: string): void {
-    if (tabId === '') return;
-    configState.update(
-      (draft) => {
-        const tab = draft.tabs.find((tb) => tb.id === tabId);
-        if (!tab) return;
-        tab.overrides = { ...saved.overrides };
-        tab.iconColor = saved.iconColor;
-      },
-      { destructive: true },
-    );
-  }
-
+  // Only removes the saved theme itself; a tab or the global default that
+  // picked it (as `theme:{id}`) reverts to the built-in fallback flavour
+  // the next time the config is (re)parsed — see resolveFlavour.ts.
   function deleteSavedTheme(id: string): void {
     configState.update(
       (draft) => {
@@ -383,26 +374,11 @@
     {#if theme.savedThemes && theme.savedThemes.length > 0}
       <section class="field-group">
         <h2 class="subheading">{t.savedThemesHeading}</h2>
+        <p class="hint">{t.savedThemesHint}</p>
         <ul class="saved-theme-list">
           {#each theme.savedThemes as saved (saved.id)}
             <li class="saved-theme-row">
               <span class="saved-theme-name">{saved.name}</span>
-              <button type="button" class="secondary" onclick={() => applySavedTheme(saved)}>
-                {t.applyAsDefault}
-              </button>
-              <select
-                value=""
-                aria-label={t.applyToTabLabel(saved.name)}
-                onchange={(event) => {
-                  applySavedThemeToTab(saved, event.currentTarget.value);
-                  event.currentTarget.value = '';
-                }}
-              >
-                <option value="" disabled>{t.applyToTabPlaceholder}</option>
-                {#each configState.config.tabs as tab (tab.id)}
-                  <option value={tab.id}>{tab.name}</option>
-                {/each}
-              </select>
               <button
                 type="button"
                 class="secondary"
@@ -565,15 +541,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-  }
-
-  .saved-theme-row select {
-    font-size: 0.85em;
-    background: var(--surface-page);
-    color: var(--text-primary);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius, 12px);
-    padding: var(--space-1) var(--space-2);
   }
 
   .preview {

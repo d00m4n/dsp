@@ -34,29 +34,45 @@ describe('applyTheme', () => {
     expect(document.documentElement.style.getPropertyValue('--icon')).toBe('');
   });
 
-  it("replaces the global overrides with the active tab's own theme override", () => {
-    applyTheme(
-      { ...DEFAULT_CONFIG.theme, overrides: { mauve: '#123456' }, iconColor: '#111111' },
-      false,
-      undefined,
-      { overrides: { red: '#abcdef' }, iconColor: '#ff00ff' },
-    );
+  it("applies a saved theme's own overrides and flavour when picked in a tab's flavour slot", () => {
+    const theme = {
+      ...DEFAULT_CONFIG.theme,
+      savedThemes: [
+        {
+          id: 'custom-1',
+          name: 'Custom',
+          baseFlavour: 'dsp-night' as const,
+          overrides: { red: '#abcdef' },
+          iconColor: '#ff00ff',
+        },
+      ],
+    };
+    applyTheme(theme, true, { darkFlavour: 'theme:custom-1' });
     const style = document.documentElement.style;
-    expect(style.getPropertyValue('--p-mauve')).toBe('');
+    expect(document.documentElement.getAttribute('data-flavour')).toBe('dsp-night');
     expect(style.getPropertyValue('--p-red')).toBe('#abcdef');
     expect(style.getPropertyValue('--icon')).toBe('#ff00ff');
   });
 
-  it('falls back to the global overrides when the tab has none of its own', () => {
-    applyTheme(
-      { ...DEFAULT_CONFIG.theme, overrides: { mauve: '#123456' }, iconColor: '#111111' },
-      false,
-      undefined,
-      {},
-    );
+  it("lets the global manual overrides win over a picked saved theme's own values", () => {
+    const theme = {
+      ...DEFAULT_CONFIG.theme,
+      overrides: { red: '#111111' },
+      iconColor: '#222222',
+      savedThemes: [
+        {
+          id: 'custom-1',
+          name: 'Custom',
+          baseFlavour: 'dsp-night' as const,
+          overrides: { red: '#abcdef' },
+          iconColor: '#ff00ff',
+        },
+      ],
+    };
+    applyTheme(theme, true, { darkFlavour: 'theme:custom-1' });
     const style = document.documentElement.style;
-    expect(style.getPropertyValue('--p-mauve')).toBe('#123456');
-    expect(style.getPropertyValue('--icon')).toBe('#111111');
+    expect(style.getPropertyValue('--p-red')).toBe('#111111');
+    expect(style.getPropertyValue('--icon')).toBe('#222222');
   });
 
   it('sets data-flavour based on prefersDark', () => {

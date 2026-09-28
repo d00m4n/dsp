@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Flavour, Tab } from '../../../types/config';
+  import type { FlavourChoice, Tab } from '../../../types/config';
   import { strings } from '../../strings';
   import { configState } from '../../state/config.svelte';
   import { announce } from '../../state/announcer.svelte';
@@ -9,7 +9,7 @@
   import { assignMnemonics } from '../../mnemonics/assign';
   import { parseName } from '../../mnemonics/parseName';
   import { generateId } from '../../utils/id';
-  import { ALL_FLAVOURS } from '../../theme/flavourGroups';
+  import { ALL_FLAVOURS, flavourOptions } from '../../theme/flavourGroups';
   import { untrack } from 'svelte';
   import GroupEditor from './GroupEditor.svelte';
   import IconNameHelp from './IconNameHelp.svelte';
@@ -23,6 +23,11 @@
   const { tab }: Props = $props();
 
   const mnemonics = $derived(assignMnemonics(tab));
+
+  const savedThemes = $derived(configState.config.theme.savedThemes);
+  const flavourNames = strings.settings.appearance.flavourNames;
+  // Every slot allows any flavour, built-in or saved — see ALL_FLAVOURS's own comment.
+  const flavourChoices = $derived(flavourOptions(ALL_FLAVOURS, savedThemes, flavourNames, 'all'));
 
   function findTab(draftTabs: Tab[]): Tab | undefined {
     return draftTabs.find((tb) => tb.id === tab.id);
@@ -47,7 +52,7 @@
 
   function setTabFlavour(
     field: 'lightFlavour' | 'darkFlavour' | 'fallbackFlavour',
-    value: Flavour,
+    value: FlavourChoice,
   ): void {
     configState.update(
       (draft) => {
@@ -70,7 +75,7 @@
     ),
   );
 
-  function setFixedFlavour(value: Flavour): void {
+  function setFixedFlavour(value: FlavourChoice): void {
     configState.update(
       (draft) => {
         const tb = findTab(draft.tabs);
@@ -110,20 +115,6 @@
           tb.darkFlavour = undefined;
           tb.fallbackFlavour = undefined;
         }
-      },
-      { destructive: true },
-    );
-  }
-
-  const hasCustomTheme = $derived(tab.overrides !== undefined || tab.iconColor !== undefined);
-
-  function clearTabTheme(): void {
-    configState.update(
-      (draft) => {
-        const tb = findTab(draft.tabs);
-        if (!tb) return;
-        tb.overrides = undefined;
-        tb.iconColor = undefined;
       },
       { destructive: true },
     );
@@ -233,10 +224,10 @@
           <span>{t.fixedFlavourLabel}</span>
           <select
             value={tab.darkFlavour ?? tab.lightFlavour ?? configState.config.theme.darkFlavour}
-            onchange={(event) => setFixedFlavour(event.currentTarget.value as Flavour)}
+            onchange={(event) => setFixedFlavour(event.currentTarget.value as FlavourChoice)}
           >
-            {#each ALL_FLAVOURS as flavour (flavour)}
-              <option value={flavour}>{strings.settings.appearance.flavourNames[flavour]}</option>
+            {#each flavourChoices as option (option.value)}
+              <option value={option.value}>{option.label}</option>
             {/each}
           </select>
         </label>
@@ -245,10 +236,11 @@
           <span>{strings.settings.appearance.lightFlavourLabel}</span>
           <select
             value={tab.lightFlavour ?? configState.config.theme.lightFlavour}
-            onchange={(event) => setTabFlavour('lightFlavour', event.currentTarget.value as Flavour)}
+            onchange={(event) =>
+              setTabFlavour('lightFlavour', event.currentTarget.value as FlavourChoice)}
           >
-            {#each ALL_FLAVOURS as flavour (flavour)}
-              <option value={flavour}>{strings.settings.appearance.flavourNames[flavour]}</option>
+            {#each flavourChoices as option (option.value)}
+              <option value={option.value}>{option.label}</option>
             {/each}
           </select>
         </label>
@@ -257,10 +249,11 @@
           <span>{strings.settings.appearance.darkFlavourLabel}</span>
           <select
             value={tab.darkFlavour ?? configState.config.theme.darkFlavour}
-            onchange={(event) => setTabFlavour('darkFlavour', event.currentTarget.value as Flavour)}
+            onchange={(event) =>
+              setTabFlavour('darkFlavour', event.currentTarget.value as FlavourChoice)}
           >
-            {#each ALL_FLAVOURS as flavour (flavour)}
-              <option value={flavour}>{strings.settings.appearance.flavourNames[flavour]}</option>
+            {#each flavourChoices as option (option.value)}
+              <option value={option.value}>{option.label}</option>
             {/each}
           </select>
         </label>
@@ -270,25 +263,16 @@
           <select
             value={tab.fallbackFlavour ?? configState.config.theme.fallbackFlavour}
             onchange={(event) =>
-              setTabFlavour('fallbackFlavour', event.currentTarget.value as Flavour)}
+              setTabFlavour('fallbackFlavour', event.currentTarget.value as FlavourChoice)}
           >
-            {#each ALL_FLAVOURS as flavour (flavour)}
-              <option value={flavour}>{strings.settings.appearance.flavourNames[flavour]}</option>
+            {#each flavourChoices as option (option.value)}
+              <option value={option.value}>{option.label}</option>
             {/each}
           </select>
         </label>
       {/if}
     {/if}
   </div>
-
-  {#if hasCustomTheme}
-    <div class="field-group">
-      <p class="hint">{t.customThemeAppliedHint}</p>
-      <button type="button" class="add-button" onclick={clearTabTheme}>
-        {t.clearCustomTheme}
-      </button>
-    </div>
-  {/if}
 
   {#if mnemonics.unassigned.length > 0}
     <p class="saturation-warning">{t.unassignedCount(mnemonics.unassigned.length)}</p>
