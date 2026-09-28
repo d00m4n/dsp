@@ -2,6 +2,12 @@ import { PALETTE_TOKENS, type PaletteToken } from '../../types/palette';
 import type { ThemeConfig } from '../../types/config';
 import { resolveFlavour, type FlavourOverride } from './resolveFlavour';
 
+/** A tab's own colour-token overrides, copied in from a saved theme. */
+export interface TabThemeOverride {
+  overrides?: Partial<Record<PaletteToken, string>>;
+  iconColor?: string;
+}
+
 /**
  * Tokens repurposed to drive a semantic token directly instead of their own
  * --p-{token} variable. Their default comes from that semantic token (see
@@ -27,6 +33,7 @@ export function applyTheme(
   theme: ThemeConfig,
   prefersDark: boolean,
   tabOverride?: FlavourOverride,
+  tabThemeOverride?: TabThemeOverride,
 ): void {
   const flavour = resolveFlavour(theme, prefersDark, tabOverride);
   const root = document.documentElement;
@@ -35,20 +42,25 @@ export function applyTheme(
   root.style.setProperty('--font-scale', String(theme.fontScale));
   root.style.setProperty('--radius', `${theme.radius}px`);
 
-  if (theme.iconColor) {
-    root.style.setProperty('--icon', theme.iconColor);
+  const iconColor = tabThemeOverride?.iconColor ?? theme.iconColor;
+  if (iconColor) {
+    root.style.setProperty('--icon', iconColor);
   } else {
     root.style.removeProperty('--icon');
   }
 
-  // Per-token colour overrides (set via the "!theme" customizer) apply on
-  // top of whichever flavour is active, regardless of light/dark — they
-  // are not stored per-flavour. Any token without an override must have
-  // its inline value removed, so a cleared override actually reverts to
-  // the flavour's own value instead of sticking with a stale one.
+  // Per-token colour overrides (set via the "!theme" customizer, or a saved
+  // theme applied to the active tab) apply on top of whichever flavour is
+  // active, regardless of light/dark — they are not stored per-flavour. A
+  // tab's own overrides replace the global ones entirely rather than
+  // merging with them, matching how a tab's flavour picks replace the
+  // global flavour. Any token without an override must have its inline
+  // value removed, so a cleared override actually reverts to the flavour's
+  // own value instead of sticking with a stale one.
+  const overrides = tabThemeOverride?.overrides ?? theme.overrides;
   for (const token of PALETTE_TOKENS) {
     if (token in SEMANTIC_OVERRIDES) continue;
-    const override = theme.overrides?.[token];
+    const override = overrides?.[token];
     if (override) {
       root.style.setProperty(`--p-${token}`, override);
     } else {
@@ -57,7 +69,7 @@ export function applyTheme(
   }
 
   for (const [token, cssVar] of Object.entries(SEMANTIC_OVERRIDES) as [PaletteToken, string][]) {
-    const override = theme.overrides?.[token];
+    const override = overrides?.[token];
     if (override) {
       root.style.setProperty(cssVar, override);
     } else {

@@ -263,6 +263,19 @@
     );
   }
 
+  function applySavedThemeToTab(saved: SavedTheme, tabId: string): void {
+    if (tabId === '') return;
+    configState.update(
+      (draft) => {
+        const tab = draft.tabs.find((tb) => tb.id === tabId);
+        if (!tab) return;
+        tab.overrides = { ...saved.overrides };
+        tab.iconColor = saved.iconColor;
+      },
+      { destructive: true },
+    );
+  }
+
   function deleteSavedTheme(id: string): void {
     configState.update(
       (draft) => {
@@ -375,8 +388,21 @@
             <li class="saved-theme-row">
               <span class="saved-theme-name">{saved.name}</span>
               <button type="button" class="secondary" onclick={() => applySavedTheme(saved)}>
-                {t.applyTheme}
+                {t.applyAsDefault}
               </button>
+              <select
+                value=""
+                aria-label={t.applyToTabLabel(saved.name)}
+                onchange={(event) => {
+                  applySavedThemeToTab(saved, event.currentTarget.value);
+                  event.currentTarget.value = '';
+                }}
+              >
+                <option value="" disabled>{t.applyToTabPlaceholder}</option>
+                {#each configState.config.tabs as tab (tab.id)}
+                  <option value={tab.id}>{tab.name}</option>
+                {/each}
+              </select>
               <button
                 type="button"
                 class="secondary"
@@ -539,6 +565,15 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  .saved-theme-row select {
+    font-size: 0.85em;
+    background: var(--surface-page);
+    color: var(--text-primary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius, 12px);
+    padding: var(--space-1) var(--space-2);
   }
 
   .preview {

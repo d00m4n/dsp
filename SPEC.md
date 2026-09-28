@@ -78,6 +78,13 @@ export interface Tab {
   /** Under /wallpapers. Animated formats allowed. */
   banner?: string;
   bannerStatic?: string;
+  /** Per-tab flavour override; unset fields fall back to the global theme. */
+  lightFlavour?: Flavour;
+  darkFlavour?: Flavour;
+  fallbackFlavour?: Flavour;
+  /** A saved theme applied to this tab (copied in, not referenced live). */
+  overrides?: Partial<Record<PaletteToken, string>>;
+  iconColor?: string;
   groups: LinkGroup[];
 }
 
@@ -232,9 +239,15 @@ El tema s'aplica **abans del primer pintat** amb un script inline al `<head>`, a
 qualsevol full d'estil.
 
 **Temes desats.** Importar un fitxer de tema (o enganxar-ne el JSON) mai sobreescriu els
-overrides actius: afegeix una entrada a `theme.savedThemes`, inerta fins que l'usuari prem
-«Aplicar». Aplicar-ne un sí que sobreescriu `overrides`/`iconColor` actius (operació
-destructiva, amb desfer). Esborrar una entrada de `savedThemes` no toca el tema actiu.
+overrides actius: afegeix una entrada a `theme.savedThemes`, inerta fins que l'usuari
+l'aplica. Des de la llista de temes desats es pot aplicar com a **tema per defecte**
+(sobreescriu `theme.overrides`/`theme.iconColor` globals) o **a una pestanya concreta**
+(es copia a `Tab.overrides`/`Tab.iconColor`, no és una referència: esborrar el tema desat
+no afecta les pestanyes on ja s'ha aplicat). Aplicar-lo és sempre una operació destructiva
+sobre l'overrides actiu (amb desfer). Els overrides d'una pestanya reemplacen els globals
+sencers mentre aquella pestanya és activa, mai es fusionen amb ells — igual que el
+`lightFlavour`/`darkFlavour` per pestanya reemplacen el global. Esborrar una entrada de
+`savedThemes` no toca cap tema ja aplicat.
 
 L'adaptació de valors de la fase 5 no toca cap identificador ni selector: només els hex.
 Per això existeix la capa de tokens semàntics.

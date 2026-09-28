@@ -109,6 +109,13 @@ export interface Tab {
   lightFlavour?: Flavour;
   darkFlavour?: Flavour;
   fallbackFlavour?: Flavour;
+  /**
+   * A saved theme (see `ThemeConfig.savedThemes`) applied to this tab, copied
+   * in at assignment time rather than referenced live — deleting the saved
+   * theme afterwards doesn't affect tabs it was already applied to.
+   */
+  overrides?: Partial<Record<PaletteToken, string>>;
+  iconColor?: string;
   groups: LinkGroup[];
 }
 

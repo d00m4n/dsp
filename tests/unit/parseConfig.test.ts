@@ -99,6 +99,23 @@ describe('parseConfig — never throws, always returns a usable config', () => {
     expect(errors.some((e) => e.path === 'tabs[0].fallbackFlavour')).toBe(true);
   });
 
+  it("accepts a tab's own colour overrides and icon colour", () => {
+    const { config } = parseConfig({
+      tabs: [
+        {
+          id: 't1',
+          name: 'T',
+          icon: 'folder',
+          overrides: { mauve: '#123456' },
+          iconColor: '#ff00ff',
+          groups: [],
+        },
+      ],
+    });
+    expect(config.tabs[0]!.overrides).toEqual({ mauve: '#123456' });
+    expect(config.tabs[0]!.iconColor).toBe('#ff00ff');
+  });
+
   it('accepts valid theme.overrides tokens and drops unknown ones', () => {
     const { config, errors } = parseConfig({
       theme: { overrides: { mauve: '#123456', notAToken: '#ffffff' } },

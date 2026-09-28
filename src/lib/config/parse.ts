@@ -619,6 +619,8 @@ function validateTab(
       `${path}.fallbackFlavour`,
       errors,
     ),
+    overrides: validateOverrides(value.overrides, `${path}.overrides`, errors),
+    iconColor: optionalStr(value.iconColor, `${path}.iconColor`, errors),
     groups,
   };
 }

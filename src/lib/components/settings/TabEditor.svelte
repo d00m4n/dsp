@@ -115,6 +115,20 @@
     );
   }
 
+  const hasCustomTheme = $derived(tab.overrides !== undefined || tab.iconColor !== undefined);
+
+  function clearTabTheme(): void {
+    configState.update(
+      (draft) => {
+        const tb = findTab(draft.tabs);
+        if (!tb) return;
+        tb.overrides = undefined;
+        tb.iconColor = undefined;
+      },
+      { destructive: true },
+    );
+  }
+
   function addGroup(): void {
     const id = generateId();
     configState.update((draft) => {
@@ -266,6 +280,15 @@
       {/if}
     {/if}
   </div>
+
+  {#if hasCustomTheme}
+    <div class="field-group">
+      <p class="hint">{t.customThemeAppliedHint}</p>
+      <button type="button" class="add-button" onclick={clearTabTheme}>
+        {t.clearCustomTheme}
+      </button>
+    </div>
+  {/if}
 
   {#if mnemonics.unassigned.length > 0}
     <p class="saturation-warning">{t.unassignedCount(mnemonics.unassigned.length)}</p>

@@ -87,6 +87,9 @@ export const strings = {
       tabIconLabel: 'Icon name',
       customFlavourLabel: 'Custom colour flavour for this tab',
       customFlavourHint: 'This tab uses its own flavour instead of the global one.',
+      customThemeAppliedHint:
+        'A saved theme has been applied to this tab, overriding the global colour overrides while it is active.',
+      clearCustomTheme: 'Remove this tab\'s custom theme',
       flavourModeAutoLabel: 'Automatic (follow system light/dark)',
       flavourModeFixedLabel: 'Fixed (always this flavour)',
       fixedFlavourLabel: 'Flavour',
@@ -373,7 +376,9 @@ export const strings = {
     importDefaultName: 'Imported theme',
     importSave: 'Save as new theme',
     savedThemesHeading: 'Saved themes',
-    applyTheme: 'Apply',
+    applyAsDefault: 'Set as default',
+    applyToTabPlaceholder: 'Apply to tab…',
+    applyToTabLabel: (themeName: string) => `Apply "${themeName}" to tab`,
     deleteTheme: 'Delete',
   },
 } as const;
