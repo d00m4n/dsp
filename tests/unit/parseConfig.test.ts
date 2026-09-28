@@ -112,6 +112,42 @@ describe('parseConfig — never throws, always returns a usable config', () => {
     expect(config.theme.overrides).toBeUndefined();
   });
 
+  it('accepts valid saved themes and drops unknown override tokens', () => {
+    const { config, errors } = parseConfig({
+      theme: {
+        savedThemes: [
+          { id: 'imported-1', name: 'My theme', overrides: { mauve: '#123456', bogus: '#fff' } },
+        ],
+      },
+    });
+    expect(config.theme.savedThemes).toEqual([
+      { id: 'imported-1', name: 'My theme', overrides: { mauve: '#123456' }, iconColor: undefined },
+    ]);
+    expect(errors.some((e) => e.path === 'theme.savedThemes[0].overrides.bogus')).toBe(true);
+  });
+
+  it('regenerates duplicate or missing saved theme ids', () => {
+    const { config, errors } = parseConfig({
+      theme: {
+        savedThemes: [
+          { id: 'dup', name: 'A', overrides: { mauve: '#111111' } },
+          { id: 'dup', name: 'B', overrides: { mauve: '#222222' } },
+        ],
+      },
+    });
+    const ids = config.theme.savedThemes?.map((t) => t.id);
+    expect(new Set(ids).size).toBe(2);
+    expect(errors.some((e) => e.path === 'theme.savedThemes[1].id')).toBe(true);
+  });
+
+  it('defaults theme.savedThemes to an empty array when absent or malformed', () => {
+    const { config } = parseConfig({ theme: {} });
+    expect(config.theme.savedThemes).toEqual([]);
+    const { config: config2, errors } = parseConfig({ theme: { savedThemes: 'nope' } });
+    expect(config2.theme.savedThemes).toEqual([]);
+    expect(errors.some((e) => e.path === 'theme.savedThemes')).toBe(true);
+  });
+
   it('rejects an invalid flavour and falls back to the default', () => {
     const { config, errors } = parseConfig({ theme: { darkFlavour: 'not-a-flavour' } });
     expect(config.theme.darkFlavour).toBe(DEFAULT_CONFIG.theme.darkFlavour);

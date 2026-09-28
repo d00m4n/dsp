@@ -12,6 +12,7 @@ import type {
   Link,
   LinkGroup,
   PhraseWidget,
+  SavedTheme,
   SearchConfig,
   SearchEngine,
   Tab,
@@ -316,6 +317,32 @@ function validateOverrides(
   return Object.keys(result).length > 0 ? result : undefined;
 }
 
+function validateSavedThemes(
+  value: unknown,
+  path: string,
+  errors: ConfigError[],
+): SavedTheme[] {
+  if (value === undefined) return [];
+  if (!Array.isArray(value)) {
+    report(errors, path, `expected an array, got ${typeof value}`);
+    return [];
+  }
+  const used = new Set<string>();
+  return value.map((entry, index) => {
+    const entryPath = `${path}[${index}]`;
+    if (!isRecord(entry)) {
+      report(errors, entryPath, `expected an object, got ${typeof entry}`);
+      return { id: uniqueId(undefined, used, `${entryPath}.id`, 'theme', errors), name: 'Unnamed' };
+    }
+    return {
+      id: uniqueId(entry.id, used, `${entryPath}.id`, 'theme', errors),
+      name: str(entry.name, `${entryPath}.name`, 'Unnamed', errors),
+      overrides: validateOverrides(entry.overrides, `${entryPath}.overrides`, errors),
+      iconColor: optionalStr(entry.iconColor, `${entryPath}.iconColor`, errors),
+    };
+  });
+}
+
 function validateTheme(value: unknown, path: string, errors: ConfigError[]): ThemeConfig {
   const fallback = DEFAULT_CONFIG.theme;
   if (!isRecord(value)) {
@@ -360,6 +387,7 @@ function validateTheme(value: unknown, path: string, errors: ConfigError[]): The
     ),
     overrides: validateOverrides(value.overrides, `${path}.overrides`, errors),
     iconColor: optionalStr(value.iconColor, `${path}.iconColor`, errors),
+    savedThemes: validateSavedThemes(value.savedThemes, `${path}.savedThemes`, errors),
   };
 }
 

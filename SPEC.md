@@ -33,6 +33,15 @@ export interface ThemeConfig {
   fontScale: number; // 0.8 – 1.4
   radius: number; // px
   backdrop: BackdropConfig;
+  /** Custom themes saved by the user (e.g. imported); inert until applied. */
+  savedThemes?: SavedTheme[];
+}
+
+export interface SavedTheme {
+  id: string;
+  name: string;
+  overrides?: Partial<Record<PaletteToken, string>>;
+  iconColor?: string;
 }
 
 export interface BackdropConfig {
@@ -221,6 +230,11 @@ fosca de `fallbackFlavour`. L'usuari només tria quina paleta correspon a cada m
 
 El tema s'aplica **abans del primer pintat** amb un script inline al `<head>`, abans de
 qualsevol full d'estil.
+
+**Temes desats.** Importar un fitxer de tema (o enganxar-ne el JSON) mai sobreescriu els
+overrides actius: afegeix una entrada a `theme.savedThemes`, inerta fins que l'usuari prem
+«Aplicar». Aplicar-ne un sí que sobreescriu `overrides`/`iconColor` actius (operació
+destructiva, amb desfer). Esborrar una entrada de `savedThemes` no toca el tema actiu.
 
 L'adaptació de valors de la fase 5 no toca cap identificador ni selector: només els hex.
 Per això existeix la capa de tokens semàntics.

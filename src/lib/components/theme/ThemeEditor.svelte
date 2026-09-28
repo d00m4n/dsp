@@ -1,9 +1,11 @@
 <script lang="ts">
   import { PALETTE_TOKENS, type PaletteToken } from '../../../types/palette';
+  import type { SavedTheme } from '../../../types/config';
   import { configState } from '../../state/config.svelte';
   import { resolveFlavour } from '../../theme/resolveFlavour';
   import { SEMANTIC_OVERRIDES } from '../../theme/applyTheme';
   import { strings } from '../../strings';
+  import { generateId } from '../../utils/id';
   import Modal from '../ui/Modal.svelte';
 
   interface Props {
@@ -149,10 +151,12 @@
         overrides: Partial<Record<PaletteToken, string>>;
         iconColor?: string;
         unknownKeys: string[];
+        suggestedName: string;
       };
 
   let importStage: ImportStage = $state({ kind: 'idle' });
   let pastedJson = $state('');
+  let importName = $state('');
 
   function isRecord(value: unknown): value is Record<string, unknown> {
     return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -193,7 +197,11 @@
     if (Object.keys(overrides).length === 0 && !iconColor) {
       return { kind: 'error', message: t.importInvalid };
     }
-    return { kind: 'preview', overrides, iconColor, unknownKeys };
+    const suggestedName =
+      typeof parsed.flavour === 'string' && parsed.flavour.trim() !== ''
+        ? parsed.flavour
+        : t.importDefaultName;
+    return { kind: 'preview', overrides, iconColor, unknownKeys, suggestedName };
   }
 
   async function handleImportFile(event: Event): Promise<void> {
@@ -210,6 +218,7 @@
       return;
     }
     importStage = parseThemePayload(parsed);
+    if (importStage.kind === 'preview') importName = importStage.suggestedName;
   }
 
   function applyPastedJson(): void {
@@ -221,26 +230,48 @@
       return;
     }
     importStage = parseThemePayload(parsed);
+    if (importStage.kind === 'preview') importName = importStage.suggestedName;
   }
 
   function confirmImport(): void {
     if (importStage.kind !== 'preview') return;
     const { overrides, iconColor } = importStage;
+    const name = importName.trim() !== '' ? importName.trim() : importStage.suggestedName;
 
-    configState.update(
-      (draft) => {
-        draft.theme.overrides = { ...draft.theme.overrides, ...overrides };
-        if (iconColor) draft.theme.iconColor = iconColor;
-      },
-      { destructive: true },
-    );
+    configState.update((draft) => {
+      draft.theme.savedThemes ??= [];
+      draft.theme.savedThemes.push({ id: generateId(), name, overrides, iconColor });
+    });
 
     importStage = { kind: 'idle' };
     pastedJson = '';
+    importName = '';
   }
 
   function cancelImport(): void {
     importStage = { kind: 'idle' };
+    importName = '';
+  }
+
+  function applySavedTheme(saved: SavedTheme): void {
+    configState.update(
+      (draft) => {
+        draft.theme.overrides = { ...saved.overrides };
+        draft.theme.iconColor = saved.iconColor;
+      },
+      { destructive: true },
+    );
+  }
+
+  function deleteSavedTheme(id: string): void {
+    configState.update(
+      (draft) => {
+        draft.theme.savedThemes = (draft.theme.savedThemes ?? []).filter(
+          (savedTheme) => savedTheme.id !== id,
+        );
+      },
+      { destructive: true },
+    );
   }
 </script>
 
@@ -324,13 +355,40 @@
           {#if importStage.unknownKeys.length > 0}
             <p class="warning">{t.importUnknownKeys(importStage.unknownKeys)}</p>
           {/if}
+          <label class="field">
+            {t.importNameLabel}
+            <input type="text" bind:value={importName} placeholder={importStage.suggestedName} />
+          </label>
           <div class="button-row">
-            <button type="button" onclick={confirmImport}>{t.importApply}</button>
+            <button type="button" onclick={confirmImport}>{t.importSave}</button>
             <button type="button" class="secondary" onclick={cancelImport}>{t.importCancel}</button>
           </div>
         </div>
       {/if}
     </section>
+
+    {#if theme.savedThemes && theme.savedThemes.length > 0}
+      <section class="field-group">
+        <h2 class="subheading">{t.savedThemesHeading}</h2>
+        <ul class="saved-theme-list">
+          {#each theme.savedThemes as saved (saved.id)}
+            <li class="saved-theme-row">
+              <span class="saved-theme-name">{saved.name}</span>
+              <button type="button" class="secondary" onclick={() => applySavedTheme(saved)}>
+                {t.applyTheme}
+              </button>
+              <button
+                type="button"
+                class="secondary"
+                onclick={() => deleteSavedTheme(saved.id)}
+              >
+                {t.deleteTheme}
+              </button>
+            </li>
+          {/each}
+        </ul>
+      </section>
+    {/if}
   </div>
 </Modal>
 
@@ -438,9 +496,49 @@
     resize: vertical;
   }
 
+  .field input[type='text'] {
+    font-size: 0.9em;
+    background: var(--surface-page);
+    color: var(--text-primary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius, 12px);
+    padding: var(--space-1) var(--space-2);
+  }
+
   .warning {
     font-size: 0.85em;
     color: var(--status-warning);
+  }
+
+  .subheading {
+    font-size: 0.95em;
+  }
+
+  .saved-theme-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .saved-theme-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius, 12px);
+    background: var(--surface-page);
+    border: 1px solid var(--border-subtle);
+  }
+
+  .saved-theme-name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .preview {

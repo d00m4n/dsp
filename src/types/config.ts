@@ -35,6 +35,15 @@ export interface ThemeConfig {
   radius: number; // px
   backdrop: BackdropConfig;
   contentWidth: ContentWidthConfig;
+  /** Custom themes saved by the user (e.g. imported), not applied unless picked. */
+  savedThemes?: SavedTheme[];
+}
+
+export interface SavedTheme {
+  id: string;
+  name: string;
+  overrides?: Partial<Record<PaletteToken, string>>;
+  iconColor?: string;
 }
 
 export interface ContentWidthConfig {
