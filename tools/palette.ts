@@ -162,14 +162,11 @@ const NEUTRAL_TOKENS = new Set([
   'text',
   'subtext1',
   'subtext0',
-  'overlay2',
   'overlay1',
-  'overlay0',
   'surface2',
   'surface1',
   'surface0',
   'base',
-  'mantle',
   'crust',
 ]);
 

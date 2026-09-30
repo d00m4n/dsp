@@ -16,20 +16,6 @@
 
   const { open, onClose }: Props = $props();
 
-  // PALETTE_TOKENS carries the full 26-token Catppuccin structure so
-  // flavours.css and the accent picker can draw from it, but only some of
-  // those tokens actually reach the page: overlay0, overlay2 and mantle are
-  // never referenced by a semantic token in flavours.css and aren't offered
-  // as an accent choice either, so overriding them here would be a swatch
-  // with no visible effect. Filtered here rather than in the generated
-  // palette module.
-  type HiddenToken = 'overlay0' | 'overlay2' | 'mantle';
-  const HIDDEN_TOKENS: readonly HiddenToken[] = ['overlay0', 'overlay2', 'mantle'];
-  const EDITABLE_TOKENS = PALETTE_TOKENS.filter(
-    (token): token is Exclude<PaletteToken, HiddenToken> =>
-      !HIDDEN_TOKENS.includes(token as HiddenToken),
-  );
-
   const t = strings.themeEditor;
 
   const theme = $derived(configState.config.theme);
@@ -300,7 +286,7 @@
     </label>
 
     <div class="token-grid">
-      {#each EDITABLE_TOKENS as token (token)}
+      {#each PALETTE_TOKENS as token (token)}
         <label class="token-row" title={cssVarFor(token)}>
           <input
             type="color"

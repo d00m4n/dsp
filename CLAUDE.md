@@ -34,10 +34,15 @@ Contradicció entre els dos → mana `SPEC.md`, i avisa'n.
 Repositori privat fins que la llista de `PHASE-5.md` estigui completa.
 Actualitza aquesta taula en tancar cada fase.
 
-## Generats — no editar a mà
+## Paleta
 
-`src/styles/flavours.css` i `src/types/palette.ts`, produïts des de la paleta oficial.
-Es regeneren a la fase 5 amb `tools/palette.ts`.
+`src/styles/flavours.css` i `src/types/palette.ts` són heretats de la paleta oficial,
+però ja no s'han de mantenir sincronitzats amb ella: es poden editar a mà. La paleta
+només conté els tokens que tenen un ús real (semàntic, `SEMANTIC_OVERRIDES` o accent);
+si un token no es fa servir enlloc, es treu. En afegir o treure'n un, toca alhora
+`palette.ts`, els set blocs de `flavours.css`, `strings.ts` (`tokenNames`) i, si cal,
+`tools/palette.ts`. `tools/palette.ts` només reajusta els valors dels tokens existents
+(fase 5) i en comprova el contrast (`palette:check`).
 
 ## Regles
 

@@ -320,28 +320,19 @@ export const strings = {
     hint:
       'Colour overrides apply on top of whichever flavour is active (light or dark) — they are not saved per-flavour.',
     iconLabel: 'Icon',
-    // Human-friendly labels for the raw Catppuccin-style palette token
-    // names (see types/palette.ts), named after their default semantic
-    // role in flavours.css where one exists. Several tokens (maroon,
-    // peach, teal, sky, sapphire, overlay2, overlay0, mantle) aren't wired
-    // to any semantic token by default — they're kept under their
-    // original name since inventing a role for them would be misleading.
-    // 'rosewater', 'flamingo' and 'pink' are the exceptions: they drive
-    // --text-widget, --icon-widget and --surface-widget-bar respectively
-    // (see flavours.css, applyTheme.ts's SEMANTIC_OVERRIDES).
+    // Human-friendly labels for the raw palette token names (see
+    // types/palette.ts), named after their semantic role in flavours.css.
+    // 'rosewater', 'flamingo' and 'pink' drive --text-widget, --icon-widget
+    // and --surface-widget-bar respectively (see applyTheme.ts's
+    // SEMANTIC_OVERRIDES).
     tokenNames: {
       rosewater: 'Widget text',
       flamingo: 'Widget icon',
       pink: 'Widget bar',
       mauve: 'Mnemonic',
       red: 'Danger',
-      maroon: 'Maroon',
-      peach: 'Peach',
       yellow: 'Warning',
       green: 'Success',
-      teal: 'Teal',
-      sky: 'Sky',
-      sapphire: 'Sapphire',
       blue: 'Info',
       lavender: 'Accent (muted)',
       text: 'Primary text',
