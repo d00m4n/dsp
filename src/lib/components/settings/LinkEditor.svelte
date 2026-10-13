@@ -326,7 +326,8 @@
     margin-left: var(--space-1);
     border-radius: 999px;
     background: var(--surface-overlay);
-    color: var(--text-muted);
+    color: var(--mnemonic);
+    font-weight: 700;
     font-size: 0.75em;
     text-transform: uppercase;
   }

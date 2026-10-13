@@ -46,6 +46,9 @@ export const strings = {
     reload: 'Reload',
     dismiss: 'Dismiss',
   },
+  tabBar: {
+    shortcutHint: (n: number) => `Press ${n}`,
+  },
   mobileActions: {
     search: 'Search',
     help: 'Help',

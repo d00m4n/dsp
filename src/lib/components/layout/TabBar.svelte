@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Tab } from '../../../types/config';
+  import { strings } from '../../strings';
   import IconGlyph from '../ui/IconGlyph.svelte';
 
   interface Props {
@@ -19,6 +20,7 @@
       class:active={tab.id === activeTabId}
       aria-current={tab.id === activeTabId ? 'page' : undefined}
       data-tab-index={i + 1}
+      title={i < 9 ? strings.tabBar.shortcutHint(i + 1) : undefined}
       onclick={() => onSelect(tab.id)}
     >
       <IconGlyph name={tab.icon} size={16} />

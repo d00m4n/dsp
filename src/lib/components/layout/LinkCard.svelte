@@ -92,7 +92,8 @@
     padding: 0 0.35em;
     border-radius: 999px;
     background: var(--surface-overlay);
-    color: var(--text-muted);
+    color: var(--mnemonic);
+    font-weight: 700;
     font-size: 0.75em;
     text-transform: uppercase;
   }
