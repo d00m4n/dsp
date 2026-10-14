@@ -45,9 +45,14 @@
     letter-spacing: 0.04em;
   }
 
+  /* Flex rather than grid so the cards on a partial last row grow to fill it. */
   .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
     gap: var(--space-3);
+  }
+
+  .grid > :global(*) {
+    flex: 1 1 220px;
   }
 </style>
