@@ -6,6 +6,7 @@
   import { isAllowedUrl } from '../../search/protocols';
   import { buildMnemonicPreviewTab } from './mnemonicPreview';
   import { assignMnemonics } from '../../mnemonics/assign';
+  import IconGlyph from '../ui/IconGlyph.svelte';
   import { untrack } from 'svelte';
 
   const t = strings.settings.tabsLinks;
@@ -221,6 +222,7 @@
     <div class="meta-fields">
       <label class="icon-field">
         <span class="visually-hidden">{t.linkIconLabel}</span>
+        <IconGlyph name={link.icon} size={16} />
         <input
           type="text"
           placeholder={t.linkIconLabel}
@@ -350,6 +352,12 @@
     display: flex;
     align-items: center;
     gap: var(--space-3);
+  }
+
+  .icon-field {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
   }
 
   .icon-field input {
