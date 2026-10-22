@@ -24,6 +24,32 @@ export function reorderByPointer(list: string[], draggedId: string, targetIndex:
   return next;
 }
 
+export interface ItemRect {
+  top: number;
+  bottom: number;
+  left: number;
+  right: number;
+}
+
+/**
+ * Returns the index the dragged item should take among its siblings (the
+ * dragged item itself must not be in `siblings`): the number of siblings
+ * whose midpoint the pointer has passed. The ordering axis is a property of
+ * the whole list, not of each item: siblings laid out on a single row are
+ * horizontal, anything else is vertical. Deciding per item by aspect ratio
+ * made wide rows read as horizontal, so a pointer on a left-hand handle
+ * always resolved to index 0.
+ */
+export function insertionIndex(siblings: ItemRect[], clientX: number, clientY: number): number {
+  const first = siblings[0];
+  if (!first) return 0;
+  const horizontal =
+    siblings.length > 1 && siblings.every((r) => Math.abs(r.top - first.top) < 4);
+  return siblings.filter((r) =>
+    horizontal ? clientX > (r.left + r.right) / 2 : clientY > (r.top + r.bottom) / 2,
+  ).length;
+}
+
 export interface PointerReorderOptions {
   /** Ids of the items in their current order, parallel to the DOM children. */
   items: () => string[];
@@ -63,23 +89,6 @@ export function attachPointerReorder(
 
   function idOf(el: Element): string | null {
     return el.getAttribute('data-reorder-id');
-  }
-
-  function indexFromPointer(clientY: number, clientX: number): number {
-    const children = childElements();
-    for (let i = 0; i < children.length; i++) {
-      const child = children[i];
-      if (!child) continue;
-      const rect = child.getBoundingClientRect();
-      const midY = rect.top + rect.height / 2;
-      const midX = rect.left + rect.width / 2;
-      // Support both vertical and horizontal lists: whichever axis the item
-      // spans more of is treated as the ordering axis.
-      const isVertical = rect.height >= rect.width;
-      const past = isVertical ? clientY > midY : clientX > midX;
-      if (!past) return i;
-    }
-    return children.length - 1;
   }
 
   function findHandleTarget(event: PointerEvent): HTMLElement | null {
@@ -154,20 +163,17 @@ export function attachPointerReorder(
     if (draggedId === null || activePointerId !== event.pointerId || !draggedEl) return;
     event.preventDefault();
 
-    const targetIndex = indexFromPointer(event.clientY, event.clientX);
     const children = childElements();
-    const currentIndex = children.indexOf(draggedEl);
-    if (targetIndex === currentIndex) return;
-
-    const reference = children[targetIndex];
-    if (!reference || reference === draggedEl) return;
+    const siblings = children.filter((child) => child !== draggedEl);
+    const targetIndex = insertionIndex(
+      siblings.map((child) => child.getBoundingClientRect()),
+      event.clientX,
+      event.clientY,
+    );
+    if (targetIndex === children.indexOf(draggedEl)) return;
 
     const before = recordRects();
-    if (targetIndex > currentIndex) {
-      node.insertBefore(draggedEl, reference.nextSibling);
-    } else {
-      node.insertBefore(draggedEl, reference);
-    }
+    node.insertBefore(draggedEl, siblings[targetIndex] ?? null);
     playFlip(before);
   }
 
